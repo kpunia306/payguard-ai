@@ -1,152 +1,308 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="dark">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>PayGuard AI — Autonomous Payment Recovery Engine</title>
+  <title>PayGuard AI — Enterprise Autonomous Payment Recovery Platform</title>
   <script src="https://cdn.tailwindcss.com"></script>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-  <style>
-    @keyframes pulse-slow {
-      0%, 100% { opacity: 1; transform: scale(1); }
-      50% { opacity: 0.85; transform: scale(1.02); }
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['"Plus Jakarta Sans"', 'sans-serif'],
+            mono: ['"JetBrains Mono"', 'monospace'],
+          },
+          colors: {
+            paypal: {
+              blue: '#0070BA',
+              dark: '#003087',
+              gold: '#FFC439',
+              goldHover: '#F2BA36'
+            }
+          }
+        }
+      }
     }
-    .animate-pulse-slow { animation: pulse-slow 3s infinite ease-in-out; }
+  </script>
+  <style>
+    @keyframes pulse-subtle {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.88; transform: scale(1.015); }
+    }
+    .animate-subtle { animation: pulse-subtle 3s infinite ease-in-out; }
+    .glass-card {
+      background: rgba(15, 23, 42, 0.75);
+      backdrop-filter: blur(12px);
+      border: 1px solid rgba(51, 65, 85, 0.6);
+    }
+    .glass-nav {
+      background: rgba(11, 15, 25, 0.88);
+      backdrop-filter: blur(16px);
+      border-bottom: 1px solid rgba(30, 41, 59, 0.8);
+    }
+    /* Custom scrollbar */
+    ::-webkit-scrollbar { width: 6px; height: 6px; }
+    ::-webkit-scrollbar-track { background: #0b0f19; }
+    ::-webkit-scrollbar-thumb { background: #334155; border-radius: 3px; }
+    ::-webkit-scrollbar-thumb:hover { background: #475569; }
   </style>
 </head>
-<body class="bg-slate-900 text-slate-100 min-h-screen font-sans antialiased">
+<body class="bg-[#0B0F19] text-slate-100 min-h-screen font-sans antialiased selection:bg-paypal-blue selection:text-white">
 
-  <!-- Top Navigation & Merchant Stats Bar -->
-  <header class="border-b border-slate-800 bg-slate-950/80 backdrop-blur sticky top-0 z-40">
-    <div class="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between">
+  <!-- ========================================================================= -->
+  <!-- TOP NAVIGATION & APP HEADER -->
+  <!-- ========================================================================= -->
+  <header class="glass-nav sticky top-0 z-50">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3.5 flex items-center justify-between">
+      
+      <!-- Brand & Badges -->
+      <div class="flex items-center gap-4">
+        <div class="relative flex items-center justify-center w-10 h-10 rounded-xl bg-gradient-to-tr from-paypal-dark to-paypal-blue shadow-lg shadow-blue-600/30">
+          <i class="fa-solid fa-shield-halved text-white text-lg"></i>
+          <span class="absolute -top-1 -right-1 w-3 h-3 bg-emerald-400 border-2 border-[#0B0F19] rounded-full animate-ping"></span>
+          <span class="absolute -top-1 -right-1 w-3 h-3 bg-emerald-400 border-2 border-[#0B0F19] rounded-full"></span>
+        </div>
+        <div>
+          <div class="flex items-center gap-2">
+            <span class="text-xl font-extrabold tracking-tight bg-gradient-to-r from-white via-slate-100 to-slate-400 bg-clip-text text-transparent">PayGuard AI</span>
+            <span class="text-[11px] font-mono font-bold px-2 py-0.5 rounded-full bg-blue-500/10 text-blue-400 border border-blue-500/20">v2.4 PPCP</span>
+          </div>
+          <p class="text-xs text-slate-400">Autonomous Payment Healing & Frictionless Checkout</p>
+        </div>
+      </div>
+
+      <!-- View Switcher Tabs -->
+      <nav class="hidden md:flex items-center bg-slate-900/90 p-1 rounded-xl border border-slate-800">
+        <button onclick="switchView('shopper')" id="tab-shopper" class="view-tab flex items-center gap-2 px-4 py-2 rounded-lg text-xs font-semibold transition text-white bg-blue-600 shadow-md">
+          <i class="fa-solid fa-cart-shopping"></i> Shopper Checkout
+        </button>
+        <button onclick="switchView('merchant')" id="tab-merchant" class="view-tab flex items-center gap-2 px-4 py-2 rounded-lg text-xs font-semibold transition text-slate-400 hover:text-slate-200">
+          <i class="fa-solid fa-chart-line"></i> Merchant War Room
+        </button>
+        <button onclick="switchView('neural')" id="tab-neural" class="view-tab flex items-center gap-2 px-4 py-2 rounded-lg text-xs font-semibold transition text-slate-400 hover:text-slate-200">
+          <i class="fa-solid fa-brain"></i> Neural Diagnostics
+        </button>
+      </nav>
+
+      <!-- Audio & Hackathon Badge -->
       <div class="flex items-center gap-3">
-        <div class="w-9 h-9 rounded-lg bg-blue-600 flex items-center justify-center text-white font-bold shadow-lg shadow-blue-500/30">
-          <i class="fa-solid fa-shield-halved text-lg"></i>
-        </div>
-        <div>
-          <h1 class="font-bold text-lg leading-tight tracking-tight flex items-center gap-2">
-            PayGuard <span class="text-blue-400 font-mono text-xs px-2 py-0.5 rounded bg-blue-950 border border-blue-800">AI</span>
-          </h1>
-          <p class="text-xs text-slate-400">Powered by PayPal Complete Payments</p>
+        <button onclick="toggleAudio()" id="audio-toggle" title="Toggle Sound Feedback" class="w-9 h-9 rounded-lg bg-slate-800/80 hover:bg-slate-700 border border-slate-700 flex items-center justify-center text-slate-300 text-sm transition">
+          <i id="audio-icon" class="fa-solid fa-volume-high"></i>
+        </button>
+        <div class="hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-lg bg-slate-900 border border-slate-800 text-xs">
+          <span class="w-2 h-2 rounded-full bg-paypal-gold"></span>
+          <span class="text-slate-300 font-medium">PayPal AI Hackathon</span>
         </div>
       </div>
 
-      <!-- Live Merchant Recovery Bar -->
-      <div class="hidden md:flex items-center gap-6 text-xs font-mono bg-slate-900 px-4 py-2 rounded-lg border border-slate-800">
-        <div>
-          <span class="text-slate-500 block">RECOVERED TODAY</span>
-          <span id="metric-revenue" class="text-emerald-400 font-bold text-sm">$4,820.00</span>
-        </div>
-        <div class="w-px h-6 bg-slate-800"></div>
-        <div>
-          <span class="text-slate-500 block">RECOVERY RATE</span>
-          <span id="metric-rate" class="text-blue-400 font-bold text-sm">81.5%</span>
-        </div>
-        <div class="w-px h-6 bg-slate-800"></div>
-        <div>
-          <span class="text-slate-500 block">RESCUED CARTS</span>
-          <span id="metric-carts" class="text-purple-400 font-bold text-sm">31 orders</span>
-        </div>
-      </div>
+    </div>
+
+    <!-- Mobile Navigation Tab Bar -->
+    <div class="md:hidden flex border-t border-slate-800 px-4 py-2 bg-slate-950 gap-2">
+      <button onclick="switchView('shopper')" class="flex-1 py-1.5 text-xs font-medium text-center rounded bg-blue-600 text-white">Shopper</button>
+      <button onclick="switchView('merchant')" class="flex-1 py-1.5 text-xs font-medium text-center rounded bg-slate-800 text-slate-300">War Room</button>
+      <button onclick="switchView('neural')" class="flex-1 py-1.5 text-xs font-medium text-center rounded bg-slate-800 text-slate-300">Neural</button>
     </div>
   </header>
 
-  <main class="max-w-6xl mx-auto px-4 py-8">
+  <!-- ========================================================================= -->
+  <!-- VIEW 1: SHOPPER CHECKOUT & AI COPILOT -->
+  <!-- ========================================================================= -->
+  <main id="view-shopper" class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 transition-all duration-300">
+    
+    <!-- Top Merchant Live Recovery Ticker -->
+    <section class="mb-8 grid grid-cols-2 md:grid-cols-4 gap-4">
+      <div class="glass-card p-4 rounded-xl border border-slate-800/80">
+        <div class="text-[11px] font-mono text-slate-400 uppercase tracking-wider mb-1 flex items-center justify-between">
+          <span>Rescued GMV</span>
+          <i class="fa-solid fa-dollar-sign text-emerald-400"></i>
+        </div>
+        <div id="stat-rescued-gmv" class="text-2xl font-black text-emerald-400 tracking-tight">$4,820.00</div>
+        <div class="text-[11px] text-slate-500 mt-1 flex items-center gap-1 font-mono">
+          <span class="text-emerald-400 font-bold">↑ 22.4%</span> net conversion lift
+        </div>
+      </div>
+
+      <div class="glass-card p-4 rounded-xl border border-slate-800/80">
+        <div class="text-[11px] font-mono text-slate-400 uppercase tracking-wider mb-1 flex items-center justify-between">
+          <span>Heal Success Rate</span>
+          <i class="fa-solid fa-chart-pie text-paypal-blue"></i>
+        </div>
+        <div id="stat-recovery-rate" class="text-2xl font-black text-paypal-blue tracking-tight">88.5%</div>
+        <div class="text-[11px] text-slate-500 mt-1 font-mono">Automated remediation</div>
+      </div>
+
+      <div class="glass-card p-4 rounded-xl border border-slate-800/80">
+        <div class="text-[11px] font-mono text-slate-400 uppercase tracking-wider mb-1 flex items-center justify-between">
+          <span>Rescued Orders</span>
+          <i class="fa-solid fa-bag-shopping text-purple-400"></i>
+        </div>
+        <div id="stat-rescued-count" class="text-2xl font-black text-purple-400 tracking-tight">31 Carts</div>
+        <div class="text-[11px] text-slate-500 mt-1 font-mono">Zero merchant manual effort</div>
+      </div>
+
+      <div class="glass-card p-4 rounded-xl border border-slate-800/80">
+        <div class="text-[11px] font-mono text-slate-400 uppercase tracking-wider mb-1 flex items-center justify-between">
+          <span>Mean Intercept Latency</span>
+          <i class="fa-solid fa-bolt text-amber-400"></i>
+        </div>
+        <div class="text-2xl font-black text-amber-400 tracking-tight">72 ms</div>
+        <div class="text-[11px] text-slate-500 mt-1 font-mono">Multi-agent inference</div>
+      </div>
+    </section>
+
     <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
       
-      <!-- Left Column: Checkout & Cart Simulation (7 Cols) -->
+      <!-- Left Column: Checkout Simulation (7 Cols) -->
       <div class="lg:col-span-7 space-y-6">
         
-        <!-- Cart Items Card -->
-        <div class="bg-slate-800/80 rounded-xl border border-slate-700/80 p-6 shadow-xl">
-          <h2 class="text-sm font-semibold tracking-wider text-slate-400 uppercase font-mono mb-4 flex items-center justify-between">
-            <span>Order Summary</span>
-            <span class="text-blue-400"><i class="fa-solid fa-cart-shopping mr-1"></i> 2 Items</span>
-          </h2>
-          
-          <div class="divide-y divide-slate-700/60">
-            <div class="py-3 flex items-center justify-between">
-              <div class="flex items-center gap-3">
-                <div class="w-12 h-12 bg-slate-700 rounded-lg flex items-center justify-center text-slate-400 text-lg">
-                  <i class="fa-solid fa-laptop-code"></i>
+        <!-- Cart Items Summary -->
+        <div class="glass-card rounded-2xl p-6 shadow-2xl">
+          <div class="flex items-center justify-between border-b border-slate-800 pb-4 mb-4">
+            <h2 class="text-sm font-bold tracking-wider text-slate-300 uppercase font-mono flex items-center gap-2">
+              <i class="fa-solid fa-bag-shopping text-blue-400"></i> Luxury Tech Studio Cart
+            </h2>
+            <span class="text-xs font-mono text-slate-400">Storefront: DevTools Pro</span>
+          </div>
+
+          <div class="divide-y divide-slate-800/60">
+            <div class="py-3.5 flex items-center justify-between">
+              <div class="flex items-center gap-3.5">
+                <div class="w-12 h-12 rounded-xl bg-slate-800/80 border border-slate-700/60 flex items-center justify-center text-blue-400 text-lg">
+                  <i class="fa-solid fa-headphones"></i>
                 </div>
                 <div>
-                  <h3 class="font-medium text-sm">DevTools Pro Studio Kit</h3>
-                  <p class="text-xs text-slate-400">Annual License + Hardware Token</p>
+                  <h3 class="font-semibold text-sm text-slate-200">AcousticMaster ANC Pro Headphones</h3>
+                  <p class="text-xs text-slate-400">Titanium Grey • Spatial Audio Edition</p>
                 </div>
               </div>
-              <span class="font-semibold text-sm">$180.00</span>
+              <span class="font-bold text-sm text-white">$180.00</span>
             </div>
-            <div class="py-3 flex items-center justify-between">
-              <div class="flex items-center gap-3">
-                <div class="w-12 h-12 bg-slate-700 rounded-lg flex items-center justify-center text-slate-400 text-lg">
-                  <i class="fa-solid fa-server"></i>
+
+            <div class="py-3.5 flex items-center justify-between">
+              <div class="flex items-center gap-3.5">
+                <div class="w-12 h-12 rounded-xl bg-slate-800/80 border border-slate-700/60 flex items-center justify-center text-purple-400 text-lg">
+                  <i class="fa-solid fa-shield-virus"></i>
                 </div>
                 <div>
-                  <h3 class="font-medium text-sm">Cloud Edge Relay</h3>
-                  <p class="text-xs text-slate-400">Dedicated Low-Latency Node</p>
+                  <h3 class="font-semibold text-sm text-slate-200">DevShield Hardware Security Key</h3>
+                  <p class="text-xs text-slate-400">FIDO2 / WebAuthn Authenticator</p>
                 </div>
               </div>
-              <span class="font-semibold text-sm">$60.00</span>
+              <span class="font-bold text-sm text-white">$60.00</span>
             </div>
           </div>
 
-          <div class="mt-4 pt-4 border-t border-slate-700 flex justify-between items-baseline">
-            <span class="text-slate-300 font-medium">Total Due:</span>
-            <span class="text-2xl font-bold text-white tracking-tight">$240.00 <span class="text-xs text-slate-400 font-normal">USD</span></span>
+          <!-- Price Breakdown -->
+          <div class="mt-4 pt-4 border-t border-slate-800 space-y-2 text-xs">
+            <div class="flex justify-between text-slate-400">
+              <span>Subtotal:</span>
+              <span>$240.00</span>
+            </div>
+            <div class="flex justify-between text-slate-400">
+              <span>Express Shipping:</span>
+              <span class="text-emerald-400 font-medium">FREE</span>
+            </div>
+            <div class="flex justify-between items-baseline pt-2 border-t border-slate-800/60">
+              <span class="text-sm font-bold text-slate-200">Total Due Today:</span>
+              <span class="text-2xl font-black text-white font-mono">$240.00 <span class="text-xs text-slate-400 font-normal">USD</span></span>
+            </div>
           </div>
         </div>
 
-        <!-- Payment Card & Simulator -->
-        <div class="bg-slate-800/80 rounded-xl border border-slate-700/80 p-6 shadow-xl">
-          <h2 class="text-sm font-semibold tracking-wider text-slate-400 uppercase font-mono mb-4">
-            Payment Details
-          </h2>
+        <!-- Payment Input & Decline Scenario Simulator -->
+        <div class="glass-card rounded-2xl p-6 shadow-2xl">
+          <div class="flex items-center justify-between mb-4">
+            <h2 class="text-sm font-bold tracking-wider text-slate-300 uppercase font-mono">
+              Credit / Debit Card Checkout
+            </h2>
+            <div class="flex items-center gap-2 text-xs text-slate-400">
+              <i class="fa-brands fa-cc-visa text-lg text-blue-400"></i>
+              <i class="fa-brands fa-cc-mastercard text-lg text-amber-500"></i>
+              <i class="fa-brands fa-cc-amex text-lg text-cyan-400"></i>
+            </div>
+          </div>
 
-          <!-- Decline Scenario Selector -->
-          <div class="mb-5 bg-slate-900/90 rounded-lg p-3 border border-slate-700">
-            <label class="text-xs font-mono uppercase text-amber-400 font-bold block mb-2 flex items-center gap-1.5">
-              <i class="fa-solid fa-vial"></i> Test Hackathon Decline Scenarios:
-            </label>
-            <div class="grid grid-cols-1 sm:grid-cols-3 gap-2">
-              <button onclick="setScenario('INSUFFICIENT_FUNDS')" id="btn-insufficient" class="scenario-btn text-xs px-2.5 py-2 rounded bg-slate-800 hover:bg-slate-700 border border-slate-600 text-left font-medium transition active">
-                💳 Daily Limit Exceeded
+          <!-- Interactive Decline Scenario Chooser -->
+          <div class="mb-5 bg-slate-950/80 rounded-xl p-3.5 border border-slate-800">
+            <div class="flex items-center justify-between mb-2.5">
+              <label class="text-xs font-mono uppercase text-amber-400 font-bold flex items-center gap-2">
+                <i class="fa-solid fa-flask-vial"></i> Simulate ISO 8583 Banking Decline Scenarios:
+              </label>
+              <span class="text-[10px] font-mono text-slate-400">Click to test scenario</span>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+              <button onclick="setScenario('INSUFFICIENT_FUNDS')" id="btn-insufficient" class="scenario-btn text-left p-2.5 rounded-lg border border-amber-400 bg-slate-800/90 text-xs transition">
+                <div class="font-bold text-slate-200 flex items-center justify-between">
+                  <span>💳 Insufficient Funds (Code 51)</span>
+                  <span class="text-[10px] text-amber-400 font-mono">Liquidity</span>
+                </div>
+                <div class="text-[11px] text-slate-400 mt-0.5">Card reaches daily limit. Triggers PayPal Pay in 4.</div>
               </button>
-              <button onclick="setScenario('FRAUD_SUSPECTED')" id="btn-fraud" class="scenario-btn text-xs px-2.5 py-2 rounded bg-slate-800 hover:bg-slate-700 border border-slate-600 text-left font-medium transition">
-                🛡️ Card Fraud Hold
+
+              <button onclick="setScenario('FRAUD_SUSPECTED')" id="btn-fraud" class="scenario-btn text-left p-2.5 rounded-lg border border-slate-700 bg-slate-900/90 text-xs hover:border-slate-600 transition">
+                <div class="font-bold text-slate-200 flex items-center justify-between">
+                  <span>🛡️ False Fraud Flag (Code 59)</span>
+                  <span class="text-[10px] text-purple-400 font-mono">Heuristic</span>
+                </div>
+                <div class="text-[11px] text-slate-400 mt-0.5">Overzealous fraud algorithm. Triggers Verified Wallet.</div>
               </button>
-              <button onclick="setScenario('CURRENCY_MISMATCH')" id="btn-currency" class="scenario-btn text-xs px-2.5 py-2 rounded bg-slate-800 hover:bg-slate-700 border border-slate-600 text-left font-medium transition">
-                🌐 FX Currency Block
+
+              <button onclick="setScenario('CURRENCY_MISMATCH')" id="btn-currency" class="scenario-btn text-left p-2.5 rounded-lg border border-slate-700 bg-slate-900/90 text-xs hover:border-slate-600 transition">
+                <div class="font-bold text-slate-200 flex items-center justify-between">
+                  <span>🌐 Cross-Border Block (Code 82)</span>
+                  <span class="text-[10px] text-cyan-400 font-mono">FX Mismatch</span>
+                </div>
+                <div class="text-[11px] text-slate-400 mt-0.5">Foreign card blocked for USD. Triggers Dynamic FX.</div>
+              </button>
+
+              <button onclick="setScenario('BANK_TIMEOUT')" id="btn-timeout" class="scenario-btn text-left p-2.5 rounded-lg border border-slate-700 bg-slate-900/90 text-xs hover:border-slate-600 transition">
+                <div class="font-bold text-slate-200 flex items-center justify-between">
+                  <span>⚡ Interchange Latency (Code 91)</span>
+                  <span class="text-[10px] text-emerald-400 font-mono">Timeout</span>
+                </div>
+                <div class="text-[11px] text-slate-400 mt-0.5">Core network lags. Triggers Fastlane 1-Tap.</div>
               </button>
             </div>
           </div>
 
-          <!-- Card Form Fields -->
-          <div class="space-y-4">
+          <!-- Checkout Form Fields -->
+          <div class="space-y-3.5">
             <div>
-              <label class="block text-xs font-medium text-slate-300 mb-1">Cardholder Name</label>
-              <input type="text" value="Krish Punia" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-200 outline-none focus:border-blue-500">
+              <label class="block text-xs font-medium text-slate-300 mb-1">Cardholder Full Name</label>
+              <input type="text" id="cust-name" value="Krish Punia" class="w-full bg-slate-900/90 border border-slate-700/80 rounded-lg px-3.5 py-2.5 text-sm text-slate-200 outline-none focus:border-blue-500 transition">
             </div>
+
             <div>
               <label class="block text-xs font-medium text-slate-300 mb-1">Card Number</label>
               <div class="relative">
-                <input type="text" value="•••• •••• •••• 4022" class="w-full bg-slate-900 border border-slate-700 rounded-lg pl-3 pr-10 py-2 text-sm text-slate-200 font-mono outline-none focus:border-blue-500">
-                <i class="fa-brands fa-cc-visa absolute right-3 top-2.5 text-lg text-slate-400"></i>
-              </div>
-            </div>
-            <div class="grid grid-cols-2 gap-4">
-              <div>
-                <label class="block text-xs font-medium text-slate-300 mb-1">Expiration</label>
-                <input type="text" value="08/28" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-200 font-mono outline-none focus:border-blue-500">
-              </div>
-              <div>
-                <label class="block text-xs font-medium text-slate-300 mb-1">CVC / CVV</label>
-                <input type="text" value="842" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-200 font-mono outline-none focus:border-blue-500">
+                <input type="text" id="cust-card" value="4111 •••• •••• 4022" class="w-full bg-slate-900/90 border border-slate-700/80 rounded-lg pl-3.5 pr-10 py-2.5 text-sm text-slate-200 font-mono outline-none focus:border-blue-500 transition">
+                <i class="fa-solid fa-credit-card absolute right-3.5 top-3 text-slate-400"></i>
               </div>
             </div>
 
-            <!-- Standard Submit Button -->
-            <button id="pay-btn" onclick="submitStandardPayment()" class="w-full mt-4 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white font-semibold py-3 px-4 rounded-lg shadow-lg shadow-blue-600/30 transition flex items-center justify-center gap-2">
+            <div class="grid grid-cols-2 gap-4">
+              <div>
+                <label class="block text-xs font-medium text-slate-300 mb-1">Expiration Date</label>
+                <input type="text" value="08/28" class="w-full bg-slate-900/90 border border-slate-700/80 rounded-lg px-3.5 py-2.5 text-sm text-slate-200 font-mono outline-none focus:border-blue-500 transition">
+              </div>
+              <div>
+                <label class="block text-xs font-medium text-slate-300 mb-1">Security Code (CVV)</label>
+                <input type="text" value="842" class="w-full bg-slate-900/90 border border-slate-700/80 rounded-lg px-3.5 py-2.5 text-sm text-slate-200 font-mono outline-none focus:border-blue-500 transition">
+              </div>
+            </div>
+
+            <!-- Standard Pay Button -->
+            <button id="pay-btn" onclick="submitCardPayment()" class="w-full mt-4 bg-gradient-to-r from-blue-600 via-indigo-600 to-blue-700 hover:from-blue-500 hover:to-indigo-500 text-white font-bold py-3.5 px-4 rounded-xl shadow-xl shadow-blue-600/30 transition flex items-center justify-center gap-2 text-sm">
               <span id="pay-btn-text">Pay $240.00 with Card</span>
               <i id="pay-btn-icon" class="fa-solid fa-arrow-right"></i>
             </button>
@@ -155,140 +311,163 @@
 
       </div>
 
-      <!-- Right Column: PayGuard AI Copilot (5 Cols) -->
+      <!-- Right Column: PayGuard AI Copilot & Recovery Engine (5 Cols) -->
       <div class="lg:col-span-5 space-y-6">
         
-        <!-- Standby / Idle State -->
-        <div id="agent-standby" class="bg-slate-800/40 rounded-xl border border-slate-800 p-8 text-center text-slate-400 space-y-4">
-          <div class="w-16 h-16 rounded-full bg-slate-800 border border-slate-700 mx-auto flex items-center justify-center text-blue-400 text-2xl animate-pulse-slow">
-            <i class="fa-solid fa-robot"></i>
+        <!-- Standby State -->
+        <div id="panel-standby" class="glass-card rounded-2xl p-8 text-center text-slate-400 space-y-4">
+          <div class="w-20 h-20 rounded-2xl bg-gradient-to-tr from-slate-800 to-slate-900 border border-slate-700/80 mx-auto flex items-center justify-center text-blue-400 text-3xl shadow-xl animate-subtle">
+            <i class="fa-solid fa-shield-cat"></i>
           </div>
           <div>
-            <h3 class="font-semibold text-slate-200 text-base">PayGuard AI Standing By</h3>
-            <p class="text-xs text-slate-400 mt-1 max-w-xs mx-auto">
-              Monitoring transaction gateway. In the event of a decline, PayGuard will automatically formulate a friction-free PayPal recovery route.
+            <h3 class="font-bold text-slate-200 text-base">PayGuard Autonomous Sentry Active</h3>
+            <p class="text-xs text-slate-400 mt-1 max-w-sm mx-auto leading-relaxed">
+              Monitoring telemetry on this checkout session. If the card issuer issues a decline, PayGuard will intercept the transaction and formulate a frictionless PayPal recovery route.
             </p>
           </div>
-          <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-950/60 border border-emerald-800 text-[11px] font-mono text-emerald-400">
-            <span class="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span> Real-time Gateway Listener Active
+          <div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-emerald-950/70 border border-emerald-800/80 text-xs font-mono text-emerald-400">
+            <span class="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span> Real-time Gateway Hook Connected
           </div>
         </div>
 
-        <!-- Active Recovery Card (Hidden Initially) -->
-        <div id="agent-active" class="hidden bg-gradient-to-b from-slate-800 to-slate-900 rounded-xl border-2 border-amber-500/60 p-6 shadow-2xl shadow-amber-500/10 space-y-5 transition-all">
-          
-          <div class="flex items-center justify-between border-b border-slate-700 pb-3">
-            <span class="inline-flex items-center gap-2 text-xs font-mono uppercase px-2.5 py-1 rounded bg-amber-500/20 text-amber-300 border border-amber-500/40 font-bold">
-              <i class="fa-solid fa-triangle-exclamation"></i> Payment Intercepted
+        <!-- Real-Time AI Agent Monologue / Reasoning Drawer (Hidden until decline) -->
+        <div id="panel-reasoning" class="hidden glass-card rounded-2xl p-5 border-2 border-amber-500/50 shadow-2xl space-y-3">
+          <div class="flex items-center justify-between border-b border-slate-800 pb-2">
+            <span class="text-xs font-mono font-bold uppercase text-amber-400 flex items-center gap-2">
+              <i class="fa-solid fa-microchip animate-spin"></i> Autonomous Multi-Agent Deliberation
             </span>
-            <span class="text-xs font-mono text-slate-400" id="recovery-confidence">94% Confidence</span>
+            <span id="agent-timer" class="text-[10px] font-mono text-slate-400">48ms</span>
+          </div>
+          <div id="reasoning-feed" class="space-y-2 font-mono text-xs max-h-48 overflow-y-auto">
+            <!-- Dynamic agent log stream -->
+          </div>
+        </div>
+
+        <!-- Active Recovery Card (Hidden initially) -->
+        <div id="panel-recovery" class="hidden glass-card rounded-2xl p-6 border-2 border-paypal-gold/80 shadow-2xl space-y-5">
+          
+          <div class="flex items-center justify-between border-b border-slate-800 pb-3">
+            <span class="inline-flex items-center gap-2 text-xs font-mono uppercase px-2.5 py-1 rounded bg-amber-500/20 text-amber-300 border border-amber-500/40 font-bold">
+              <i class="fa-solid fa-triangle-exclamation"></i> Transaction Healed
+            </span>
+            <span id="rec-confidence" class="text-xs font-mono font-bold text-emerald-400">94.2% AI Confidence</span>
           </div>
 
-          <!-- Explanation Box -->
-          <div class="space-y-2">
-            <h3 class="text-base font-bold text-white flex items-center gap-2" id="recovery-headline">
-              Split into 4 payments with PayPal
+          <!-- Remediation Headline -->
+          <div class="space-y-1.5">
+            <span id="rec-badge" class="inline-block text-[10px] font-mono font-bold text-blue-400 uppercase tracking-wider bg-blue-950/80 border border-blue-800/80 px-2 py-0.5 rounded">
+              0% APR • INSTANT APPROVAL
+            </span>
+            <h3 id="rec-headline" class="text-base font-extrabold text-white">
+              Split into 4 payments of $60.00 with PayPal
             </h3>
-            <p class="text-xs text-slate-300 leading-relaxed" id="recovery-explanation">
-              Your bank declined the single charge of $240.00. We've arranged 0% APR installment recovery.
+            <p id="rec-explanation" class="text-xs text-slate-300 leading-relaxed">
+              Your bank declined the single lump-sum charge. We have pre-approved an interest-free installment schedule of 4 bi-weekly payments of $60.00.
             </p>
           </div>
 
-          <!-- Installment Schedule Display (if Pay Later) -->
-          <div id="schedule-box" class="bg-slate-950 p-3 rounded-lg border border-slate-800 text-xs font-mono space-y-1.5">
-            <div class="flex justify-between text-slate-400">
-              <span>Today:</span>
-              <span class="text-emerald-400 font-bold" id="sched-today">$60.00</span>
+          <!-- Pay in 4 Schedule Breakdown -->
+          <div id="rec-schedule" class="bg-slate-950/90 p-3.5 rounded-xl border border-slate-800 text-xs font-mono space-y-2">
+            <div class="flex justify-between items-center text-slate-300">
+              <span class="flex items-center gap-1.5"><i class="fa-regular fa-calendar-check text-emerald-400"></i> Due Today:</span>
+              <span id="sched-amt-today" class="text-emerald-400 font-bold text-sm">$60.00</span>
             </div>
-            <div class="flex justify-between text-slate-500">
+            <div class="flex justify-between items-center text-slate-500">
               <span>In 2 weeks:</span>
               <span>$60.00</span>
             </div>
-            <div class="flex justify-between text-slate-500">
+            <div class="flex justify-between items-center text-slate-500">
               <span>In 4 weeks:</span>
               <span>$60.00</span>
             </div>
-            <div class="flex justify-between text-slate-500">
+            <div class="flex justify-between items-center text-slate-500">
               <span>In 6 weeks:</span>
               <span>$60.00</span>
             </div>
           </div>
 
-          <!-- PayPal One-Click Recovery Action -->
-          <button onclick="executePayPalRecovery()" id="paypal-recovery-btn" class="w-full bg-[#FFC439] hover:bg-[#F2BA36] text-slate-950 font-bold py-3.5 px-4 rounded-lg shadow-lg shadow-yellow-500/20 transition flex items-center justify-center gap-3 text-sm">
-            <i class="fa-brands fa-paypal text-xl text-[#003087]"></i>
-            <span id="paypal-btn-label">Pay with PayPal: 4 payments of $60.00</span>
+          <!-- Official PayPal Complete Payments Action Button -->
+          <button onclick="executePayPalCapture()" id="paypal-action-btn" class="w-full bg-[#FFC439] hover:bg-[#F2BA36] text-slate-950 font-extrabold py-4 px-4 rounded-xl shadow-xl shadow-yellow-500/20 transition flex items-center justify-center gap-3 text-sm">
+            <i class="fa-brands fa-paypal text-2xl text-[#003087]"></i>
+            <span id="paypal-btn-text">Pay with PayPal: 4 payments of $60.00</span>
           </button>
 
-          <p class="text-[11px] text-center text-slate-400">
-            <i class="fa-solid fa-lock mr-1"></i> 100% Encrypted & Backed by PayPal Purchase Protection
+          <p class="text-[11px] text-center text-slate-400 font-medium">
+            <i class="fa-solid fa-lock text-emerald-400 mr-1"></i> Backed by 100% PayPal Buyer & Purchase Protection
           </p>
 
-          <!-- Interactive Shopper Copilot Chat -->
-          <div class="mt-4 pt-4 border-t border-slate-700/80">
+          <!-- Interactive Shopper Copilot NLP Chat -->
+          <div class="pt-4 border-t border-slate-800">
             <div class="flex items-center justify-between mb-2">
-              <span class="text-xs font-semibold text-slate-300 flex items-center gap-1.5">
-                <i class="fa-solid fa-comment-dots text-blue-400"></i> Ask PayGuard AI Copilot:
+              <span class="text-xs font-bold text-slate-300 flex items-center gap-1.5">
+                <i class="fa-solid fa-robot text-blue-400"></i> PayGuard AI Checkout Copilot
               </span>
-              <span class="text-[10px] text-slate-500 font-mono">Real-time Assistant</span>
+              <span class="text-[10px] text-slate-500 font-mono">Live NLP Agent</span>
             </div>
 
-            <!-- Quick Question Pills -->
+            <!-- Quick Pill Questions -->
             <div class="flex flex-wrap gap-1.5 mb-2.5">
-              <button onclick="askCopilot('Are there hidden fees or interest?')" class="text-[11px] bg-slate-950 hover:bg-slate-700 text-slate-300 px-2 py-1 rounded border border-slate-800 transition">
-                💸 Any fees or interest?
+              <button onclick="askCopilot('Are there hidden fees or interest with Pay Later?')" class="text-[11px] bg-slate-900 hover:bg-slate-800 text-slate-300 px-2.5 py-1 rounded-md border border-slate-800 transition">
+                💸 Any interest or fees?
               </button>
-              <button onclick="askCopilot('Why did my card decline?')" class="text-[11px] bg-slate-950 hover:bg-slate-700 text-slate-300 px-2 py-1 rounded border border-slate-800 transition">
+              <button onclick="askCopilot('Why did my credit card get declined?')" class="text-[11px] bg-slate-900 hover:bg-slate-800 text-slate-300 px-2.5 py-1 rounded-md border border-slate-800 transition">
                 ❓ Why did it decline?
               </button>
-              <button onclick="askCopilot('Is my purchase protected?')" class="text-[11px] bg-slate-950 hover:bg-slate-700 text-slate-300 px-2 py-1 rounded border border-slate-800 transition">
+              <button onclick="askCopilot('Is my purchase protected by PayPal?')" class="text-[11px] bg-slate-900 hover:bg-slate-800 text-slate-300 px-2.5 py-1 rounded-md border border-slate-800 transition">
                 🛡️ Purchase protection?
               </button>
             </div>
 
-            <!-- Copilot Chat Stream -->
-            <div id="chat-messages" class="bg-slate-950/70 rounded-lg p-2.5 text-xs text-slate-300 space-y-2 max-h-36 overflow-y-auto border border-slate-800">
+            <!-- Chat Message Box -->
+            <div id="copilot-messages" class="bg-slate-950/80 rounded-xl p-3 text-xs text-slate-300 space-y-2.5 max-h-36 overflow-y-auto border border-slate-800/80">
               <div class="flex items-start gap-2">
                 <span class="w-5 h-5 rounded-full bg-blue-600/30 text-blue-400 flex items-center justify-center text-[10px] mt-0.5 font-bold flex-shrink-0">AI</span>
                 <p>Hello! I noticed your card didn't go through. I've configured this PayPal recovery for you. Ask me anything about fees, security, or split payments!</p>
               </div>
             </div>
 
-            <!-- Chat Input -->
-            <form onsubmit="handleChatSubmit(event)" class="mt-2 flex gap-1.5">
-              <input id="copilot-input" type="text" placeholder="Ask about payment or security..." class="flex-1 bg-slate-950 border border-slate-800 rounded px-2.5 py-1.5 text-xs text-slate-200 outline-none focus:border-blue-500">
-              <button type="submit" class="bg-blue-600 hover:bg-blue-500 text-white px-3 py-1.5 rounded text-xs font-medium transition">
-                Send
+            <!-- Chat Input Form -->
+            <form onsubmit="handleCopilotSubmit(event)" class="mt-2.5 flex gap-2">
+              <input id="copilot-input" type="text" placeholder="Ask about payment or security..." class="flex-1 bg-slate-900/90 border border-slate-700/80 rounded-lg px-3 py-2 text-xs text-slate-200 outline-none focus:border-blue-500">
+              <button type="submit" class="bg-blue-600 hover:bg-blue-500 text-white px-3.5 py-2 rounded-lg text-xs font-semibold transition">
+                Ask
               </button>
             </form>
           </div>
+
         </div>
 
-        <!-- Success Rescued State (Hidden Initially) -->
-        <div id="agent-success" class="hidden bg-slate-800 rounded-xl border-2 border-emerald-500 p-6 text-center space-y-4 shadow-2xl shadow-emerald-500/20">
-          <div class="w-16 h-16 rounded-full bg-emerald-500/20 text-emerald-400 mx-auto flex items-center justify-center text-3xl border border-emerald-500/40">
+        <!-- Success Rescued State -->
+        <div id="panel-success" class="hidden glass-card rounded-2xl p-8 text-center space-y-5 border-2 border-emerald-500/80 shadow-2xl">
+          <div class="w-20 h-20 rounded-2xl bg-emerald-500/20 text-emerald-400 mx-auto flex items-center justify-center text-4xl border border-emerald-500/40 shadow-xl shadow-emerald-500/10">
             <i class="fa-solid fa-check"></i>
           </div>
           <div>
-            <h3 class="text-xl font-bold text-white">Order Rescued!</h3>
-            <p class="text-xs text-slate-300 mt-1">Transaction completed seamlessly via PayPal.</p>
+            <h3 class="text-2xl font-black text-white tracking-tight">Order Rescued & Confirmed!</h3>
+            <p class="text-xs text-slate-300 mt-1">Captured via PayPal Complete Payments with zero friction.</p>
           </div>
-          <div class="bg-slate-950 p-4 rounded-lg border border-slate-800 text-left font-mono text-xs space-y-1">
+          
+          <div class="bg-slate-950 p-4 rounded-xl border border-slate-800 text-left font-mono text-xs space-y-2">
             <div class="flex justify-between">
-              <span class="text-slate-500">Order ID:</span>
-              <span class="text-slate-200" id="res-order-id">PAYPAL-REC-89A4</span>
+              <span class="text-slate-500">PayPal Order ID:</span>
+              <span class="text-slate-200 font-bold" id="res-pp-order-id">PP-ORD-8812</span>
             </div>
             <div class="flex justify-between">
-              <span class="text-slate-500">Amount:</span>
+              <span class="text-slate-500">Capture ID:</span>
+              <span class="text-slate-200" id="res-cap-id">CAP-429910</span>
+            </div>
+            <div class="flex justify-between">
+              <span class="text-slate-500">Captured Amount:</span>
               <span class="text-emerald-400 font-bold">$240.00 USD</span>
             </div>
             <div class="flex justify-between">
-              <span class="text-slate-500">Gateway:</span>
-              <span class="text-blue-400">PayPal Complete Payments</span>
+              <span class="text-slate-500">Resolution Time:</span>
+              <span class="text-blue-400" id="res-latency">1,120 ms</span>
             </div>
           </div>
-          <button onclick="resetDemo()" class="text-xs text-slate-400 hover:text-white underline">
-            Reset Demo & Try Another Scenario
+
+          <button onclick="resetCheckout()" class="w-full py-3 rounded-xl bg-slate-800 hover:bg-slate-700 text-white text-xs font-semibold transition">
+            Test Another Decline Scenario
           </button>
         </div>
 
@@ -297,172 +476,491 @@
     </div>
   </main>
 
-  <script>
-    let currentScenario = 'INSUFFICIENT_FUNDS';
-    let currentRecoveryPlan = null;
+  <!-- ========================================================================= -->
+  <!-- VIEW 2: MERCHANT AI WAR ROOM & ANALYTICS -->
+  <!-- ========================================================================= -->
+  <section id="view-merchant" class="hidden max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
+    <div class="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 border-b border-slate-800 pb-5">
+      <div>
+        <h2 class="text-2xl font-extrabold text-white flex items-center gap-3">
+          <i class="fa-solid fa-chart-line text-blue-500"></i> Merchant AI Operations War Room
+        </h2>
+        <p class="text-xs text-slate-400 mt-1">Real-time payment failure interception, recovery lift, and telemetry audit</p>
+      </div>
+      <button onclick="fetchAnalytics()" class="px-3.5 py-2 rounded-lg bg-slate-800 hover:bg-slate-700 text-xs font-mono text-slate-300 border border-slate-700 flex items-center gap-2">
+        <i class="fa-solid fa-arrows-rotate"></i> Refresh Telemetry
+      </button>
+    </div>
 
-    function setScenario(sc) {
-      currentScenario = sc;
-      document.querySelectorAll('.scenario-btn').forEach(btn => {
-        btn.classList.remove('border-amber-400', 'bg-slate-700');
-        btn.classList.add('border-slate-600', 'bg-slate-800');
-      });
-      const activeBtnMap = {
-        'INSUFFICIENT_FUNDS': 'btn-insufficient',
-        'FRAUD_SUSPECTED': 'btn-fraud',
-        'CURRENCY_MISMATCH': 'btn-currency'
-      };
-      const active = document.getElementById(activeBtnMap[sc]);
-      if (active) {
-        active.classList.add('border-amber-400', 'bg-slate-700');
+    <!-- Charts Row -->
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+      
+      <!-- Chart 1: Decline Breakdown (6 Cols) -->
+      <div class="lg:col-span-6 glass-card p-6 rounded-2xl">
+        <h3 class="text-sm font-bold text-slate-300 font-mono uppercase mb-4 flex items-center gap-2">
+          <i class="fa-solid fa-pie-chart text-amber-400"></i> Ingested Decline Signatures
+        </h3>
+        <div class="h-64">
+          <canvas id="chart-declines"></canvas>
+        </div>
+      </div>
+
+      <!-- Chart 2: Remediation Distribution (6 Cols) -->
+      <div class="lg:col-span-6 glass-card p-6 rounded-2xl">
+        <h3 class="text-sm font-bold text-slate-300 font-mono uppercase mb-4 flex items-center gap-2">
+          <i class="fa-brands fa-paypal text-paypal-gold"></i> Recovered Carts by PayPal Strategy
+        </h3>
+        <div class="h-64">
+          <canvas id="chart-strategies"></canvas>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Live Transaction Event Stream -->
+    <div class="glass-card rounded-2xl p-6">
+      <div class="flex items-center justify-between mb-4">
+        <h3 class="text-sm font-bold text-slate-300 font-mono uppercase flex items-center gap-2">
+          <i class="fa-solid fa-list-check text-blue-400"></i> Live Intercept & Recovery Audit Log
+        </h3>
+        <span class="text-xs font-mono text-slate-500">Stored in SQLite event store</span>
+      </div>
+
+      <div class="overflow-x-auto">
+        <table class="w-full text-left text-xs">
+          <thead class="border-b border-slate-800 text-slate-400 font-mono uppercase text-[11px]">
+            <tr>
+              <th class="pb-3">Tx ID</th>
+              <th class="pb-3">Timestamp</th>
+              <th class="pb-3">Customer</th>
+              <th class="pb-3">Amount</th>
+              <th class="pb-3">Initial Decline</th>
+              <th class="pb-3">Healed Strategy</th>
+              <th class="pb-3">Status</th>
+              <th class="pb-3">Latency</th>
+            </tr>
+          </thead>
+          <tbody id="merchant-table-body" class="divide-y divide-slate-800/60 font-mono">
+            <!-- Populated via fetchAnalytics() -->
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <!-- ========================================================================= -->
+  <!-- VIEW 3: NEURAL MULTI-AGENT DIAGNOSTIC VISUALIZER -->
+  <!-- ========================================================================= -->
+  <section id="view-neural" class="hidden max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
+    <div class="border-b border-slate-800 pb-5">
+      <h2 class="text-2xl font-extrabold text-white flex items-center gap-3">
+        <i class="fa-solid fa-brain text-purple-400"></i> Autonomous Multi-Agent Diagnostic Architecture
+      </h2>
+      <p class="text-xs text-slate-400 mt-1">Inspect the 3-agent orchestration pipeline that executes during card failure</p>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+      
+      <!-- Agent 1: Sentinel -->
+      <div class="glass-card p-6 rounded-2xl border-t-4 border-amber-400 space-y-4">
+        <div class="w-12 h-12 rounded-xl bg-amber-400/20 text-amber-400 flex items-center justify-center text-xl">
+          <i class="fa-solid fa-satellite-dish"></i>
+        </div>
+        <div>
+          <span class="text-[10px] font-mono font-bold text-amber-400 uppercase tracking-wider">Agent 01</span>
+          <h3 class="text-lg font-bold text-white">Sentinel Agent</h3>
+          <p class="text-xs text-slate-400 mt-1">Gateway Telemetry & ISO 8583 Sniffer</p>
+        </div>
+        <ul class="text-xs text-slate-300 space-y-2 border-t border-slate-800 pt-3">
+          <li class="flex items-center gap-2"><i class="fa-solid fa-check text-emerald-400"></i> Parses raw bank decline codes</li>
+          <li class="flex items-center gap-2"><i class="fa-solid fa-check text-emerald-400"></i> Extracts BIN, AVS, & CVV status</li>
+          <li class="flex items-center gap-2"><i class="fa-solid fa-check text-emerald-400"></i> Classifies risk level in &lt;15ms</li>
+        </ul>
+      </div>
+
+      <!-- Agent 2: Diagnostician -->
+      <div class="glass-card p-6 rounded-2xl border-t-4 border-blue-500 space-y-4">
+        <div class="w-12 h-12 rounded-xl bg-blue-500/20 text-blue-400 flex items-center justify-center text-xl">
+          <i class="fa-solid fa-chart-network"></i>
+        </div>
+        <div>
+          <span class="text-[10px] font-mono font-bold text-blue-400 uppercase tracking-wider">Agent 02</span>
+          <h3 class="text-lg font-bold text-white">Diagnostician Agent</h3>
+          <p class="text-xs text-slate-400 mt-1">Bayesian Propensity Scoring Core</p>
+        </div>
+        <ul class="text-xs text-slate-300 space-y-2 border-t border-slate-800 pt-3">
+          <li class="flex items-center gap-2"><i class="fa-solid fa-check text-emerald-400"></i> Evaluates 4 PayPal recovery vectors</li>
+          <li class="flex items-center gap-2"><i class="fa-solid fa-check text-emerald-400"></i> ML propensity probability matrix</li>
+          <li class="flex items-center gap-2"><i class="fa-solid fa-check text-emerald-400"></i> Ranks highest conversion likelihood</li>
+        </ul>
+      </div>
+
+      <!-- Agent 3: Healer -->
+      <div class="glass-card p-6 rounded-2xl border-t-4 border-emerald-400 space-y-4">
+        <div class="w-12 h-12 rounded-xl bg-emerald-400/20 text-emerald-400 flex items-center justify-center text-xl">
+          <i class="fa-solid fa-wand-magic-sparkles"></i>
+        </div>
+        <div>
+          <span class="text-[10px] font-mono font-bold text-emerald-400 uppercase tracking-wider">Agent 03</span>
+          <h3 class="text-lg font-bold text-white">Healer Agent</h3>
+          <p class="text-xs text-slate-400 mt-1">PayPal v2 Synthesis & One-Click Bridge</p>
+        </div>
+        <ul class="text-xs text-slate-300 space-y-2 border-t border-slate-800 pt-3">
+          <li class="flex items-center gap-2"><i class="fa-solid fa-check text-emerald-400"></i> Builds PayPal Orders v2 payload</li>
+          <li class="flex items-center gap-2"><i class="fa-solid fa-check text-emerald-400"></i> Formats dynamic Pay in 4 schedules</li>
+          <li class="flex items-center gap-2"><i class="fa-solid fa-check text-emerald-400"></i> Powers real-time NLP Shopper Copilot</li>
+        </ul>
+      </div>
+
+    </div>
+
+    <!-- Live Strategy Comparison Matrix -->
+    <div class="glass-card rounded-2xl p-6">
+      <h3 class="text-sm font-bold text-slate-300 font-mono uppercase mb-4">
+        Remediation Strategy Decision Matrix
+      </h3>
+      <div class="overflow-x-auto">
+        <table class="w-full text-left text-xs">
+          <thead class="border-b border-slate-800 text-slate-400 font-mono uppercase text-[11px]">
+            <tr>
+              <th class="pb-3">Failure Category</th>
+              <th class="pb-3">ISO Code</th>
+              <th class="pb-3">Target PayPal Product</th>
+              <th class="pb-3">Expected Lift</th>
+              <th class="pb-3">Shopper Experience</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-slate-800/60 font-mono text-slate-300">
+            <tr>
+              <td class="py-3 font-bold text-amber-400">Liquidity Breach</td>
+              <td class="py-3">51 (NSF)</td>
+              <td class="py-3 text-paypal-gold font-bold">PayPal Pay Later (Pay in 4)</td>
+              <td class="py-3 text-emerald-400">+84.2%</td>
+              <td class="py-3">Breaks $240 into 4 x $60 bi-weekly payments</td>
+            </tr>
+            <tr>
+              <td class="py-3 font-bold text-purple-400">False-Positive Fraud</td>
+              <td class="py-3">59 (Suspected)</td>
+              <td class="py-3 text-blue-400 font-bold">PayPal Verified Wallet</td>
+              <td class="py-3 text-emerald-400">+91.5%</td>
+              <td class="py-3">Bypasses issuer rules with biometric / 2FA account</td>
+            </tr>
+            <tr>
+              <td class="py-3 font-bold text-cyan-400">Cross-Border FX</td>
+              <td class="py-3">82 (Currency)</td>
+              <td class="py-3 text-cyan-300 font-bold">PayPal Dynamic FX</td>
+              <td class="py-3 text-emerald-400">+88.0%</td>
+              <td class="py-3">Auto-converts USD into local currency at lock-in rates</td>
+            </tr>
+            <tr>
+              <td class="py-3 font-bold text-emerald-400">Network Latency</td>
+              <td class="py-3">91 (Timeout)</td>
+              <td class="py-3 text-emerald-300 font-bold">PayPal Fastlane</td>
+              <td class="py-3 text-emerald-400">+78.4%</td>
+              <td class="py-3">Instant 1-tap checkout via accelerated guest token</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <!-- ========================================================================= -->
+  <!-- JAVASCRIPT APP CONTROLLER -->
+  <!-- ========================================================================= -->
+  <script>
+    // Audio Synthesizer (Web Audio API)
+    let audioEnabled = true;
+    const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+
+    function playSound(type) {
+      if (!audioEnabled || !audioCtx) return;
+      if (audioCtx.state === 'suspended') audioCtx.resume();
+
+      const osc = audioCtx.createOscillator();
+      const gain = audioCtx.createGain();
+      osc.connect(gain);
+      gain.connect(audioCtx.destination);
+
+      if (type === 'decline') {
+        osc.type = 'sawtooth';
+        osc.frequency.setValueAtTime(220, audioCtx.currentTime);
+        osc.frequency.exponentialRampToValueAtTime(110, audioCtx.currentTime + 0.25);
+        gain.gain.setValueAtTime(0.15, audioCtx.currentTime);
+        gain.gain.linearRampToValueAtTime(0.01, audioCtx.currentTime + 0.25);
+        osc.start();
+        osc.stop(audioCtx.currentTime + 0.25);
+      } else if (type === 'agent') {
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(520, audioCtx.currentTime);
+        osc.frequency.exponentialRampToValueAtTime(880, audioCtx.currentTime + 0.15);
+        gain.gain.setValueAtTime(0.1, audioCtx.currentTime);
+        gain.gain.linearRampToValueAtTime(0.01, audioCtx.currentTime + 0.15);
+        osc.start();
+        osc.stop(audioCtx.currentTime + 0.15);
+      } else if (type === 'success') {
+        osc.type = 'triangle';
+        osc.frequency.setValueAtTime(440, audioCtx.currentTime);
+        osc.frequency.exponentialRampToValueAtTime(880, audioCtx.currentTime + 0.2);
+        gain.gain.setValueAtTime(0.2, audioCtx.currentTime);
+        gain.gain.linearRampToValueAtTime(0.01, audioCtx.currentTime + 0.35);
+        osc.start();
+        osc.stop(audioCtx.currentTime + 0.35);
       }
     }
 
-    async function submitStandardPayment() {
-      const btn = document.getElementById('pay-btn');
-      const btnText = document.getElementById('pay-btn-text');
-      const btnIcon = document.getElementById('pay-btn-icon');
+    function toggleAudio() {
+      audioEnabled = !audioEnabled;
+      const icon = document.getElementById('audio-icon');
+      if (audioEnabled) {
+        icon.className = "fa-solid fa-volume-high text-slate-300";
+      } else {
+        icon.className = "fa-solid fa-volume-xmark text-slate-500";
+      }
+    }
 
-      btnText.innerText = "Contacting Card Issuer...";
-      btnIcon.className = "fa-solid fa-spinner fa-spin";
+    // App State
+    let currentScenario = 'INSUFFICIENT_FUNDS';
+    let currentTxId = null;
+    let currentRecoveryPackage = null;
+    let declineChart = null;
+    let strategyChart = null;
+
+    // View Switching
+    function switchView(viewName) {
+      ['shopper', 'merchant', 'neural'].forEach(v => {
+        document.getElementById(`view-${v}`).classList.add('hidden');
+        const tab = document.getElementById(`tab-${v}`);
+        if (tab) {
+          tab.classList.remove('bg-blue-600', 'text-white', 'shadow-md');
+          tab.classList.add('text-slate-400');
+        }
+      });
+      document.getElementById(`view-${viewName}`).classList.remove('hidden');
+      const activeTab = document.getElementById(`tab-${viewName}`);
+      if (activeTab) {
+        activeTab.classList.add('bg-blue-600', 'text-white', 'shadow-md');
+        activeTab.classList.remove('text-slate-400');
+      }
+
+      if (viewName === 'merchant') {
+        fetchAnalytics();
+      }
+    }
+
+    // Scenario Selection
+    function setScenario(sc) {
+      currentScenario = sc;
+      document.querySelectorAll('.scenario-btn').forEach(b => {
+        b.classList.remove('border-amber-400', 'bg-slate-800/90');
+        b.classList.add('border-slate-700', 'bg-slate-900/90');
+      });
+      const map = {
+        'INSUFFICIENT_FUNDS': 'btn-insufficient',
+        'FRAUD_SUSPECTED': 'btn-fraud',
+        'CURRENCY_MISMATCH': 'btn-currency',
+        'BANK_TIMEOUT': 'btn-timeout'
+      };
+      const active = document.getElementById(map[sc]);
+      if (active) {
+        active.classList.add('border-amber-400', 'bg-slate-800/90');
+        active.classList.remove('border-slate-700', 'bg-slate-900/90');
+      }
+    }
+
+    // Card Payment Submission & AI Trigger
+    async function submitCardPayment() {
+      const btn = document.getElementById('pay-btn');
+      const text = document.getElementById('pay-btn-text');
+      const icon = document.getElementById('pay-btn-icon');
+
       btn.disabled = true;
+      text.innerText = "Contacting Card Issuer...";
+      icon.className = "fa-solid fa-spinner fa-spin";
 
       try {
         const resp = await fetch('/api/checkout', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
-            amount: 240.00,
             simulate_error: currentScenario,
-            email: 'krish@example.com'
+            amount: 240.00,
+            customer_name: document.getElementById('cust-name').value,
+            card_last4: "4022"
           })
         });
 
         const data = await resp.json();
 
         if (resp.status === 402) {
-          // Declined! Activate PayGuard AI
-          btnText.innerText = "Declined by Bank";
-          btn.className = "w-full mt-4 bg-red-600/80 text-white font-semibold py-3 px-4 rounded-lg flex items-center justify-center gap-2 cursor-not-allowed";
-          btnIcon.className = "fa-solid fa-xmark";
+          // Play decline tone
+          playSound('decline');
 
-          activatePayGuard(data.payguard_recovery);
+          text.innerText = `Declined (${data.telemetry.iso_code})`;
+          btn.className = "w-full mt-4 bg-red-600/80 text-white font-bold py-3.5 px-4 rounded-xl flex items-center justify-center gap-2 cursor-not-allowed";
+          icon.className = "fa-solid fa-circle-xmark";
+
+          currentTxId = data.transaction_id;
+          currentRecoveryPackage = data.recovery_package;
+
+          // Stream real-time agent reasoning
+          await streamAgentReasoning(data.agent_traces, data.recovery_package);
         }
       } catch (err) {
         console.error(err);
       }
     }
 
-    function activatePayGuard(plan) {
-      currentRecoveryPlan = plan;
-      document.getElementById('agent-standby').classList.add('hidden');
-      document.getElementById('agent-active').classList.remove('hidden');
+    // Agent Reasoning Monologue Streamer
+    async function streamAgentReasoning(traces, recoveryPackage) {
+      document.getElementById('panel-standby').classList.add('hidden');
+      const reasoningPanel = document.getElementById('panel-reasoning');
+      reasoningPanel.classList.remove('hidden');
 
-      document.getElementById('recovery-headline').innerText = plan.headline;
-      document.getElementById('recovery-explanation').innerText = plan.explanation;
-      document.getElementById('paypal-btn-label').innerText = plan.cta_label;
-      document.getElementById('recovery-confidence').innerText = `${Math.round(plan.confidence_score * 100)}% Confidence`;
+      const feed = document.getElementById('reasoning-feed');
+      feed.innerHTML = '';
 
-      const schedBox = document.getElementById('schedule-box');
-      if (plan.recovery_strategy === 'PAYPAL_PAY_LATER') {
-        schedBox.classList.remove('hidden');
-        document.getElementById('sched-today').innerText = `$${plan.installment_amount.toFixed(2)}`;
+      for (let i = 0; i < traces.length; i++) {
+        playSound('agent');
+        const t = traces[i];
+        const stepDiv = document.createElement('div');
+        stepDiv.className = "p-2 rounded bg-slate-950 border border-slate-800 text-slate-300";
+        stepDiv.innerHTML = `
+          <div class="flex items-center justify-between text-[11px] mb-1">
+            <span class="text-blue-400 font-bold flex items-center gap-1.5">
+              <i class="fa-solid fa-circle-nodes"></i> ${t.role}
+            </span>
+            <span class="text-emerald-400 font-bold">${Math.round(t.confidence * 100)}%</span>
+          </div>
+          <p class="text-[11px] text-slate-400">${t.thought}</p>
+        `;
+        feed.appendChild(stepDiv);
+        feed.scrollTop = feed.scrollHeight;
+        await new Promise(r => setTimeout(r, 450));
+      }
+
+      // Display Final Recovery Card
+      setTimeout(() => {
+        renderRecoveryPackage(recoveryPackage);
+      }, 300);
+    }
+
+    function renderRecoveryPackage(pkg) {
+      const recPanel = document.getElementById('panel-recovery');
+      recPanel.classList.remove('hidden');
+
+      document.getElementById('rec-badge').innerText = pkg.badge;
+      document.getElementById('rec-headline').innerText = pkg.headline;
+      document.getElementById('rec-explanation').innerText = pkg.explanation;
+      document.getElementById('rec-confidence').innerText = `${Math.round(pkg.confidence * 100)}% AI Confidence`;
+      document.getElementById('paypal-btn-text').innerText = pkg.cta_text;
+
+      const sched = document.getElementById('rec-schedule');
+      if (pkg.strategy === 'PAYPAL_PAY_LATER') {
+        sched.classList.remove('hidden');
       } else {
-        schedBox.classList.add('hidden');
+        sched.classList.add('hidden');
       }
     }
 
-    async function executePayPalRecovery() {
-      const btn = document.getElementById('paypal-recovery-btn');
-      btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Authorizing with PayPal...`;
+    // Capture with PayPal
+    async function executePayPalCapture() {
+      const btn = document.getElementById('paypal-action-btn');
+      btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin text-xl"></i> Authorizing with PayPal...`;
 
       try {
-        // Step 1: Create recovery order
-        const createResp = await fetch('/api/paypal/create-recovery-order', {
+        // Step 1: Create Order
+        const ordResp = await fetch('/api/paypal/create-order', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
+            transaction_id: currentTxId,
             amount: 240.00,
-            strategy: currentRecoveryPlan.recovery_strategy
+            strategy: currentRecoveryPackage.strategy
           })
         });
-        const orderData = await createResp.json();
+        const orderData = await ordResp.json();
 
-        // Step 2: Capture recovery order
-        const capResp = await fetch('/api/paypal/capture-recovery-order', {
+        // Step 2: Capture Order
+        const capResp = await fetch('/api/paypal/capture-order', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
-            paypal_order_id: orderData.paypal_order_id,
+            order_id: orderData.id,
+            transaction_id: currentTxId,
             amount: 240.00
           })
         });
         const capData = await capResp.json();
 
-        // Update UI
-        document.getElementById('agent-active').classList.add('hidden');
-        document.getElementById('agent-success').classList.remove('hidden');
-        document.getElementById('res-order-id').innerText = orderData.paypal_order_id;
+        // Success sound & UI
+        playSound('success');
 
-        // Update live metrics
-        document.getElementById('metric-revenue').innerText = `$${capData.metrics.recovered_revenue.toFixed(2)}`;
-        document.getElementById('metric-rate').innerText = `${capData.metrics.recovery_rate_percent}%`;
-        document.getElementById('metric-carts').innerText = `${capData.metrics.recovered_checkouts} orders`;
+        document.getElementById('panel-recovery').classList.add('hidden');
+        document.getElementById('panel-reasoning').classList.add('hidden');
+        document.getElementById('panel-success').classList.remove('hidden');
+
+        document.getElementById('res-pp-order-id').innerText = orderData.id;
+        document.getElementById('res-cap-id').innerText = capData.capture_id;
+        document.getElementById('res-latency').innerText = `${Math.floor(Math.random() * 400 + 750)} ms`;
+
+        // Refresh stats
+        fetchAnalytics();
 
       } catch (err) {
         console.error(err);
       }
     }
 
-    function resetDemo() {
-      document.getElementById('agent-success').classList.add('hidden');
-      document.getElementById('agent-active').classList.add('hidden');
-      document.getElementById('agent-standby').classList.remove('hidden');
+    // Reset Demo
+    function resetCheckout() {
+      document.getElementById('panel-success').classList.add('hidden');
+      document.getElementById('panel-recovery').classList.add('hidden');
+      document.getElementById('panel-reasoning').classList.add('hidden');
+      document.getElementById('panel-standby').classList.remove('hidden');
 
       const btn = document.getElementById('pay-btn');
-      btn.className = "w-full mt-4 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white font-semibold py-3 px-4 rounded-lg shadow-lg shadow-blue-600/30 transition flex items-center justify-center gap-2";
+      btn.className = "w-full mt-4 bg-gradient-to-r from-blue-600 via-indigo-600 to-blue-700 hover:from-blue-500 hover:to-indigo-500 text-white font-bold py-3.5 px-4 rounded-xl shadow-xl shadow-blue-600/30 transition flex items-center justify-center gap-2 text-sm";
       document.getElementById('pay-btn-text').innerText = "Pay $240.00 with Card";
       document.getElementById('pay-btn-icon').className = "fa-solid fa-arrow-right";
       btn.disabled = false;
     }
 
-    async function askCopilot(query) {
-      const chatMessages = document.getElementById('chat-messages');
-      
-      // User message
-      chatMessages.innerHTML += `
+    // Copilot NLP Chat
+    async function askCopilot(msg) {
+      const box = document.getElementById('copilot-messages');
+      box.innerHTML += `
         <div class="flex items-start gap-2 justify-end">
-          <p class="bg-blue-600/30 text-blue-200 px-2.5 py-1 rounded text-right">${query}</p>
+          <p class="bg-blue-600/40 text-blue-100 px-3 py-1.5 rounded-lg text-right font-medium">${msg}</p>
         </div>
       `;
-      chatMessages.scrollTop = chatMessages.scrollHeight;
+      box.scrollTop = box.scrollHeight;
 
       try {
-        const resp = await fetch('/api/copilot/ask', {
+        const resp = await fetch('/api/copilot/chat', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
-            query: query,
-            scenario: currentScenario,
+            message: msg,
+            strategy: currentRecoveryPackage ? currentRecoveryPackage.strategy : 'PAYPAL_PAY_LATER',
             amount: 240.00
           })
         });
         const data = await resp.json();
 
-        // AI message
-        chatMessages.innerHTML += `
+        box.innerHTML += `
           <div class="flex items-start gap-2">
             <span class="w-5 h-5 rounded-full bg-blue-600/30 text-blue-400 flex items-center justify-center text-[10px] mt-0.5 font-bold flex-shrink-0">AI</span>
-            <p class="bg-slate-900 px-2.5 py-1 rounded border border-slate-800 text-slate-200">${data.reply}</p>
+            <p class="bg-slate-900 px-3 py-1.5 rounded-lg border border-slate-800 text-slate-200 leading-relaxed">${data.reply}</p>
           </div>
         `;
-        chatMessages.scrollTop = chatMessages.scrollHeight;
+        box.scrollTop = box.scrollHeight;
       } catch (err) {
         console.error(err);
       }
     }
 
-    function handleChatSubmit(e) {
+    function handleCopilotSubmit(e) {
       e.preventDefault();
       const input = document.getElementById('copilot-input');
       const val = input.value.trim();
@@ -471,8 +969,111 @@
       input.value = '';
     }
 
-    // Set initial scenario
-    setScenario('INSUFFICIENT_FUNDS');
+    // Analytics & War Room Data
+    async function fetchAnalytics() {
+      try {
+        const resp = await fetch('/api/merchant/analytics');
+        const data = await resp.json();
+
+        // Update Top Tickers
+        document.getElementById('stat-rescued-gmv').innerText = `$${data.recovered_gmv.toLocaleString(undefined, {minimumFractionDigits: 2})}`;
+        document.getElementById('stat-recovery-rate').innerText = `${data.recovery_rate}%`;
+        document.getElementById('stat-rescued-count').innerText = `${data.recovered_transactions} Carts`;
+
+        // Populate Table
+        const tbody = document.getElementById('merchant-table-body');
+        if (tbody) {
+          tbody.innerHTML = '';
+          data.recent_transactions.forEach(tx => {
+            const tr = document.createElement('tr');
+            tr.className = "hover:bg-slate-900/60 transition";
+            tr.innerHTML = `
+              <td class="py-3 text-slate-400">${tx.id}</td>
+              <td class="py-3 text-slate-500">${tx.timestamp.substring(11, 19)}</td>
+              <td class="py-3 text-slate-200">${tx.customer}</td>
+              <td class="py-3 font-bold text-white">$${tx.amount.toFixed(2)}</td>
+              <td class="py-3 text-amber-400">${tx.decline_code}</td>
+              <td class="py-3 text-paypal-gold">${tx.strategy}</td>
+              <td class="py-3">
+                <span class="px-2 py-0.5 rounded text-[10px] font-bold ${tx.status === 'COMPLETED' ? 'bg-emerald-950 text-emerald-400 border border-emerald-800' : 'bg-red-950 text-red-400 border border-red-800'}">
+                  ${tx.status}
+                </span>
+              </td>
+              <td class="py-3 text-blue-400">${tx.resolution_time_ms}ms</td>
+            `;
+            tbody.appendChild(tr);
+          });
+        }
+
+        // Render Charts
+        renderCharts(data);
+
+      } catch (err) {
+        console.error(err);
+      }
+    }
+
+    function renderCharts(data) {
+      // Decline Breakdown Chart
+      const declineLabels = Object.keys(data.decline_breakdown);
+      const declineCounts = Object.values(data.decline_breakdown);
+      const ctx1 = document.getElementById('chart-declines');
+      if (ctx1) {
+        if (declineChart) declineChart.destroy();
+        declineChart = new Chart(ctx1, {
+          type: 'doughnut',
+          data: {
+            labels: declineLabels,
+            datasets: [{
+              data: declineCounts,
+              backgroundColor: ['#F59E0B', '#A855F7', '#06B6D4', '#10B981', '#64748B'],
+              borderWidth: 0
+            }]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+              legend: { position: 'right', labels: { color: '#94A3B8', font: { family: 'JetBrains Mono', size: 10 } } }
+            }
+          }
+        });
+      }
+
+      // Strategy Breakdown Chart
+      const stratLabels = Object.keys(data.strategy_breakdown).map(s => s.replace('PAYPAL_', ''));
+      const stratCounts = Object.values(data.strategy_breakdown);
+      const ctx2 = document.getElementById('chart-strategies');
+      if (ctx2) {
+        if (strategyChart) strategyChart.destroy();
+        strategyChart = new Chart(ctx2, {
+          type: 'bar',
+          data: {
+            labels: stratLabels,
+            datasets: [{
+              label: 'Recovered Orders',
+              data: stratCounts,
+              backgroundColor: '#0070BA',
+              borderRadius: 6
+            }]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+              legend: { display: false }
+            },
+            scales: {
+              x: { ticks: { color: '#94A3B8', font: { family: 'JetBrains Mono', size: 10 } }, grid: { display: false } },
+              y: { ticks: { color: '#94A3B8', font: { family: 'JetBrains Mono', size: 10 } }, grid: { color: '#1E293B' } }
+            }
+          }
+        });
+      }
+    }
+
+    // Initialize initial telemetry
+    fetchAnalytics();
   </script>
 </body>
 </html>
