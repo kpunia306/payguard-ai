@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PayGuard AI — Autonomous Payment Recovery Engine</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    @keyframes pulse-slow {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.85; transform: scale(1.02); }
+    }
+    .animate-pulse-slow { animation: pulse-slow 3s infinite ease-in-out; }
+  </style>
+</head>
+<body class="bg-slate-900 text-slate-100 min-h-screen font-sans antialiased">
+
+  <!-- Top Navigation & Merchant Stats Bar -->
+  <header class="border-b border-slate-800 bg-slate-950/80 backdrop-blur sticky top-0 z-40">
+    <div class="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between">
+      <div class="flex items-center gap-3">
+        <div class="w-9 h-9 rounded-lg bg-blue-600 flex items-center justify-center text-white font-bold shadow-lg shadow-blue-500/30">
+          <i class="fa-solid fa-shield-halved text-lg"></i>
+        </div>
+        <div>
+          <h1 class="font-bold text-lg leading-tight tracking-tight flex items-center gap-2">
+            PayGuard <span class="text-blue-400 font-mono text-xs px-2 py-0.5 rounded bg-blue-950 border border-blue-800">AI</span>
+          </h1>
+          <p class="text-xs text-slate-400">Powered by PayPal Complete Payments</p>
+        </div>
+      </div>
+
+      <!-- Live Merchant Recovery Bar -->
+      <div class="hidden md:flex items-center gap-6 text-xs font-mono bg-slate-900 px-4 py-2 rounded-lg border border-slate-800">
+        <div>
+          <span class="text-slate-500 block">RECOVERED TODAY</span>
+          <span id="metric-revenue" class="text-emerald-400 font-bold text-sm">$4,820.00</span>
+        </div>
+        <div class="w-px h-6 bg-slate-800"></div>
+        <div>
+          <span class="text-slate-500 block">RECOVERY RATE</span>
+          <span id="metric-rate" class="text-blue-400 font-bold text-sm">81.5%</span>
+        </div>
+        <div class="w-px h-6 bg-slate-800"></div>
+        <div>
+          <span class="text-slate-500 block">RESCUED CARTS</span>
+          <span id="metric-carts" class="text-purple-400 font-bold text-sm">31 orders</span>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main class="max-w-6xl mx-auto px-4 py-8">
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+      
+      <!-- Left Column: Checkout & Cart Simulation (7 Cols) -->
+      <div class="lg:col-span-7 space-y-6">
+        
+        <!-- Cart Items Card -->
+        <div class="bg-slate-800/80 rounded-xl border border-slate-700/80 p-6 shadow-xl">
+          <h2 class="text-sm font-semibold tracking-wider text-slate-400 uppercase font-mono mb-4 flex items-center justify-between">
+            <span>Order Summary</span>
+            <span class="text-blue-400"><i class="fa-solid fa-cart-shopping mr-1"></i> 2 Items</span>
+          </h2>
+          
+          <div class="divide-y divide-slate-700/60">
+            <div class="py-3 flex items-center justify-between">
+              <div class="flex items-center gap-3">
+                <div class="w-12 h-12 bg-slate-700 rounded-lg flex items-center justify-center text-slate-400 text-lg">
+                  <i class="fa-solid fa-laptop-code"></i>
+                </div>
+                <div>
+                  <h3 class="font-medium text-sm">DevTools Pro Studio Kit</h3>
+                  <p class="text-xs text-slate-400">Annual License + Hardware Token</p>
+                </div>
+              </div>
+              <span class="font-semibold text-sm">$180.00</span>
+            </div>
+            <div class="py-3 flex items-center justify-between">
+              <div class="flex items-center gap-3">
+                <div class="w-12 h-12 bg-slate-700 rounded-lg flex items-center justify-center text-slate-400 text-lg">
+                  <i class="fa-solid fa-server"></i>
+                </div>
+                <div>
+                  <h3 class="font-medium text-sm">Cloud Edge Relay</h3>
+                  <p class="text-xs text-slate-400">Dedicated Low-Latency Node</p>
+                </div>
+              </div>
+              <span class="font-semibold text-sm">$60.00</span>
+            </div>
+          </div>
+
+          <div class="mt-4 pt-4 border-t border-slate-700 flex justify-between items-baseline">
+            <span class="text-slate-300 font-medium">Total Due:</span>
+            <span class="text-2xl font-bold text-white tracking-tight">$240.00 <span class="text-xs text-slate-400 font-normal">USD</span></span>
+          </div>
+        </div>
+
+        <!-- Payment Card & Simulator -->
+        <div class="bg-slate-800/80 rounded-xl border border-slate-700/80 p-6 shadow-xl">
+          <h2 class="text-sm font-semibold tracking-wider text-slate-400 uppercase font-mono mb-4">
+            Payment Details
+          </h2>
+
+          <!-- Decline Scenario Selector -->
+          <div class="mb-5 bg-slate-900/90 rounded-lg p-3 border border-slate-700">
+            <label class="text-xs font-mono uppercase text-amber-400 font-bold block mb-2 flex items-center gap-1.5">
+              <i class="fa-solid fa-vial"></i> Test Hackathon Decline Scenarios:
+            </label>
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-2">
+              <button onclick="setScenario('INSUFFICIENT_FUNDS')" id="btn-insufficient" class="scenario-btn text-xs px-2.5 py-2 rounded bg-slate-800 hover:bg-slate-700 border border-slate-600 text-left font-medium transition active">
+                💳 Daily Limit Exceeded
+              </button>
+              <button onclick="setScenario('FRAUD_SUSPECTED')" id="btn-fraud" class="scenario-btn text-xs px-2.5 py-2 rounded bg-slate-800 hover:bg-slate-700 border border-slate-600 text-left font-medium transition">
+                🛡️ Card Fraud Hold
+              </button>
+              <button onclick="setScenario('CURRENCY_MISMATCH')" id="btn-currency" class="scenario-btn text-xs px-2.5 py-2 rounded bg-slate-800 hover:bg-slate-700 border border-slate-600 text-left font-medium transition">
+                🌐 FX Currency Block
+              </button>
+            </div>
+          </div>
+
+          <!-- Card Form Fields -->
+          <div class="space-y-4">
+            <div>
+              <label class="block text-xs font-medium text-slate-300 mb-1">Cardholder Name</label>
+              <input type="text" value="Krish Punia" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-200 outline-none focus:border-blue-500">
+            </div>
+            <div>
+              <label class="block text-xs font-medium text-slate-300 mb-1">Card Number</label>
+              <div class="relative">
+                <input type="text" value="•••• •••• •••• 4022" class="w-full bg-slate-900 border border-slate-700 rounded-lg pl-3 pr-10 py-2 text-sm text-slate-200 font-mono outline-none focus:border-blue-500">
+                <i class="fa-brands fa-cc-visa absolute right-3 top-2.5 text-lg text-slate-400"></i>
+              </div>
+            </div>
+            <div class="grid grid-cols-2 gap-4">
+              <div>
+                <label class="block text-xs font-medium text-slate-300 mb-1">Expiration</label>
+                <input type="text" value="08/28" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-200 font-mono outline-none focus:border-blue-500">
+              </div>
+              <div>
+                <label class="block text-xs font-medium text-slate-300 mb-1">CVC / CVV</label>
+                <input type="text" value="842" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-200 font-mono outline-none focus:border-blue-500">
+              </div>
+            </div>
+
+            <!-- Standard Submit Button -->
+            <button id="pay-btn" onclick="submitStandardPayment()" class="w-full mt-4 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white font-semibold py-3 px-4 rounded-lg shadow-lg shadow-blue-600/30 transition flex items-center justify-center gap-2">
+              <span id="pay-btn-text">Pay $240.00 with Card</span>
+              <i id="pay-btn-icon" class="fa-solid fa-arrow-right"></i>
+            </button>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Right Column: PayGuard AI Copilot (5 Cols) -->
+      <div class="lg:col-span-5 space-y-6">
+        
+        <!-- Standby / Idle State -->
+        <div id="agent-standby" class="bg-slate-800/40 rounded-xl border border-slate-800 p-8 text-center text-slate-400 space-y-4">
+          <div class="w-16 h-16 rounded-full bg-slate-800 border border-slate-700 mx-auto flex items-center justify-center text-blue-400 text-2xl animate-pulse-slow">
+            <i class="fa-solid fa-robot"></i>
+          </div>
+          <div>
+            <h3 class="font-semibold text-slate-200 text-base">PayGuard AI Standing By</h3>
+            <p class="text-xs text-slate-400 mt-1 max-w-xs mx-auto">
+              Monitoring transaction gateway. In the event of a decline, PayGuard will automatically formulate a friction-free PayPal recovery route.
+            </p>
+          </div>
+          <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-950/60 border border-emerald-800 text-[11px] font-mono text-emerald-400">
+            <span class="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span> Real-time Gateway Listener Active
+          </div>
+        </div>
+
+        <!-- Active Recovery Card (Hidden Initially) -->
+        <div id="agent-active" class="hidden bg-gradient-to-b from-slate-800 to-slate-900 rounded-xl border-2 border-amber-500/60 p-6 shadow-2xl shadow-amber-500/10 space-y-5 transition-all">
+          
+          <div class="flex items-center justify-between border-b border-slate-700 pb-3">
+            <span class="inline-flex items-center gap-2 text-xs font-mono uppercase px-2.5 py-1 rounded bg-amber-500/20 text-amber-300 border border-amber-500/40 font-bold">
+              <i class="fa-solid fa-triangle-exclamation"></i> Payment Intercepted
+            </span>
+            <span class="text-xs font-mono text-slate-400" id="recovery-confidence">94% Confidence</span>
+          </div>
+
+          <!-- Explanation Box -->
+          <div class="space-y-2">
+            <h3 class="text-base font-bold text-white flex items-center gap-2" id="recovery-headline">
+              Split into 4 payments with PayPal
+            </h3>
+            <p class="text-xs text-slate-300 leading-relaxed" id="recovery-explanation">
+              Your bank declined the single charge of $240.00. We've arranged 0% APR installment recovery.
+            </p>
+          </div>
+
+          <!-- Installment Schedule Display (if Pay Later) -->
+          <div id="schedule-box" class="bg-slate-950 p-3 rounded-lg border border-slate-800 text-xs font-mono space-y-1.5">
+            <div class="flex justify-between text-slate-400">
+              <span>Today:</span>
+              <span class="text-emerald-400 font-bold" id="sched-today">$60.00</span>
+            </div>
+            <div class="flex justify-between text-slate-500">
+              <span>In 2 weeks:</span>
+              <span>$60.00</span>
+            </div>
+            <div class="flex justify-between text-slate-500">
+              <span>In 4 weeks:</span>
+              <span>$60.00</span>
+            </div>
+            <div class="flex justify-between text-slate-500">
+              <span>In 6 weeks:</span>
+              <span>$60.00</span>
+            </div>
+          </div>
+
+          <!-- PayPal One-Click Recovery Action -->
+          <button onclick="executePayPalRecovery()" id="paypal-recovery-btn" class="w-full bg-[#FFC439] hover:bg-[#F2BA36] text-slate-950 font-bold py-3.5 px-4 rounded-lg shadow-lg shadow-yellow-500/20 transition flex items-center justify-center gap-3 text-sm">
+            <i class="fa-brands fa-paypal text-xl text-[#003087]"></i>
+            <span id="paypal-btn-label">Pay with PayPal: 4 payments of $60.00</span>
+          </button>
+
+          <p class="text-[11px] text-center text-slate-400">
+            <i class="fa-solid fa-lock mr-1"></i> 100% Encrypted & Backed by PayPal Purchase Protection
+          </p>
+        </div>
+
+        <!-- Success Rescued State (Hidden Initially) -->
+        <div id="agent-success" class="hidden bg-slate-800 rounded-xl border-2 border-emerald-500 p-6 text-center space-y-4 shadow-2xl shadow-emerald-500/20">
+          <div class="w-16 h-16 rounded-full bg-emerald-500/20 text-emerald-400 mx-auto flex items-center justify-center text-3xl border border-emerald-500/40">
+            <i class="fa-solid fa-check"></i>
+          </div>
+          <div>
+            <h3 class="text-xl font-bold text-white">Order Rescued!</h3>
+            <p class="text-xs text-slate-300 mt-1">Transaction completed seamlessly via PayPal.</p>
+          </div>
+          <div class="bg-slate-950 p-4 rounded-lg border border-slate-800 text-left font-mono text-xs space-y-1">
+            <div class="flex justify-between">
+              <span class="text-slate-500">Order ID:</span>
+              <span class="text-slate-200" id="res-order-id">PAYPAL-REC-89A4</span>
+            </div>
+            <div class="flex justify-between">
+              <span class="text-slate-500">Amount:</span>
+              <span class="text-emerald-400 font-bold">$240.00 USD</span>
+            </div>
+            <div class="flex justify-between">
+              <span class="text-slate-500">Gateway:</span>
+              <span class="text-blue-400">PayPal Complete Payments</span>
+            </div>
+          </div>
+          <button onclick="resetDemo()" class="text-xs text-slate-400 hover:text-white underline">
+            Reset Demo & Try Another Scenario
+          </button>
+        </div>
+
+      </div>
+
+    </div>
+  </main>
+
+  <script>
+    let currentScenario = 'INSUFFICIENT_FUNDS';
+    let currentRecoveryPlan = null;
+
+    function setScenario(sc) {
+      currentScenario = sc;
+      document.querySelectorAll('.scenario-btn').forEach(btn => {
+        btn.classList.remove('border-amber-400', 'bg-slate-700');
+        btn.classList.add('border-slate-600', 'bg-slate-800');
+      });
+      const activeBtnMap = {
+        'INSUFFICIENT_FUNDS': 'btn-insufficient',
+        'FRAUD_SUSPECTED': 'btn-fraud',
+        'CURRENCY_MISMATCH': 'btn-currency'
+      };
+      const active = document.getElementById(activeBtnMap[sc]);
+      if (active) {
+        active.classList.add('border-amber-400', 'bg-slate-700');
+      }
+    }
+
+    async function submitStandardPayment() {
+      const btn = document.getElementById('pay-btn');
+      const btnText = document.getElementById('pay-btn-text');
+      const btnIcon = document.getElementById('pay-btn-icon');
+
+      btnText.innerText = "Contacting Card Issuer...";
+      btnIcon.className = "fa-solid fa-spinner fa-spin";
+      btn.disabled = true;
+
+      try {
+        const resp = await fetch('/api/checkout', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            amount: 240.00,
+            simulate_error: currentScenario,
+            email: 'krish@example.com'
+          })
+        });
+
+        const data = await resp.json();
+
+        if (resp.status === 402) {
+          // Declined! Activate PayGuard AI
+          btnText.innerText = "Declined by Bank";
+          btn.className = "w-full mt-4 bg-red-600/80 text-white font-semibold py-3 px-4 rounded-lg flex items-center justify-center gap-2 cursor-not-allowed";
+          btnIcon.className = "fa-solid fa-xmark";
+
+          activatePayGuard(data.payguard_recovery);
+        }
+      } catch (err) {
+        console.error(err);
+      }
+    }
+
+    function activatePayGuard(plan) {
+      currentRecoveryPlan = plan;
+      document.getElementById('agent-standby').classList.add('hidden');
+      document.getElementById('agent-active').classList.remove('hidden');
+
+      document.getElementById('recovery-headline').innerText = plan.headline;
+      document.getElementById('recovery-explanation').innerText = plan.explanation;
+      document.getElementById('paypal-btn-label').innerText = plan.cta_label;
+      document.getElementById('recovery-confidence').innerText = `${Math.round(plan.confidence_score * 100)}% Confidence`;
+
+      const schedBox = document.getElementById('schedule-box');
+      if (plan.recovery_strategy === 'PAYPAL_PAY_LATER') {
+        schedBox.classList.remove('hidden');
+        document.getElementById('sched-today').innerText = `$${plan.installment_amount.toFixed(2)}`;
+      } else {
+        schedBox.classList.add('hidden');
+      }
+    }
+
+    async function executePayPalRecovery() {
+      const btn = document.getElementById('paypal-recovery-btn');
+      btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Authorizing with PayPal...`;
+
+      try {
+        // Step 1: Create recovery order
+        const createResp = await fetch('/api/paypal/create-recovery-order', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            amount: 240.00,
+            strategy: currentRecoveryPlan.recovery_strategy
+          })
+        });
+        const orderData = await createResp.json();
+
+        // Step 2: Capture recovery order
+        const capResp = await fetch('/api/paypal/capture-recovery-order', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            paypal_order_id: orderData.paypal_order_id,
+            amount: 240.00
+          })
+        });
+        const capData = await capResp.json();
+
+        // Update UI
+        document.getElementById('agent-active').classList.add('hidden');
+        document.getElementById('agent-success').classList.remove('hidden');
+        document.getElementById('res-order-id').innerText = orderData.paypal_order_id;
+
+        // Update live metrics
+        document.getElementById('metric-revenue').innerText = `$${capData.metrics.recovered_revenue.toFixed(2)}`;
+        document.getElementById('metric-rate').innerText = `${capData.metrics.recovery_rate_percent}%`;
+        document.getElementById('metric-carts').innerText = `${capData.metrics.recovered_checkouts} orders`;
+
+      } catch (err) {
+        console.error(err);
+      }
+    }
+
+    function resetDemo() {
+      document.getElementById('agent-success').classList.add('hidden');
+      document.getElementById('agent-active').classList.add('hidden');
+      document.getElementById('agent-standby').classList.remove('hidden');
+
+      const btn = document.getElementById('pay-btn');
+      btn.className = "w-full mt-4 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white font-semibold py-3 px-4 rounded-lg shadow-lg shadow-blue-600/30 transition flex items-center justify-center gap-2";
+      document.getElementById('pay-btn-text').innerText = "Pay $240.00 with Card";
+      document.getElementById('pay-btn-icon').className = "fa-solid fa-arrow-right";
+      btn.disabled = false;
+    }
+
+    // Set initial scenario
+    setScenario('INSUFFICIENT_FUNDS');
+  </script>
+</body>
+</html>
