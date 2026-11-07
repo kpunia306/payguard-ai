@@ -67,29 +67,71 @@ def init_db():
     conn.close()
 
 def seed_historical_data(cur):
-    strategies = [
-        ("INSUFFICIENT_FUNDS", "PAYPAL_PAY_LATER", 240.00, "RECOVERED"),
-        ("FRAUD_SUSPECTED", "PAYPAL_VERIFIED_WALLET", 380.00, "RECOVERED"),
-        ("CURRENCY_MISMATCH", "PAYPAL_DYNAMIC_FX", 195.00, "RECOVERED"),
-        ("LIMIT_EXCEEDED", "PAYPAL_PAY_LATER", 450.00, "RECOVERED"),
-        ("BANK_TIMEOUT", "PAYPAL_FASTLANE", 120.00, "RECOVERED"),
-        ("INSUFFICIENT_FUNDS", "PAYPAL_PAY_LATER", 310.00, "RECOVERED"),
-        ("FRAUD_SUSPECTED", "PAYPAL_VERIFIED_WALLET", 520.00, "RECOVERED"),
-        ("INSUFFICIENT_FUNDS", "ABANDONED", 280.00, "DROPPED"),
+    # 29 Recovered transactions ($10,660.00 total) + 7 Abandoned transactions ($1,980.00) = 36 Total Declines
+    # Avg resolution time ~2,610 ms (2.6 s)
+    # When user executes live $240 demo rescue, totals become:
+    # 30 Recovered, 37 Total Declines (81.1% recovery rate), $10,900.00 Recovered GMV
+    records = [
+        # PAYPAL_PAY_LATER (12 items = $4,400.00)
+        ("INSUFFICIENT_FUNDS", "PAYPAL_PAY_LATER", 240.00, "COMPLETED", 2520),
+        ("INSUFFICIENT_FUNDS", "PAYPAL_PAY_LATER", 360.00, "COMPLETED", 2610),
+        ("INSUFFICIENT_FUNDS", "PAYPAL_PAY_LATER", 420.00, "COMPLETED", 2450),
+        ("INSUFFICIENT_FUNDS", "PAYPAL_PAY_LATER", 180.00, "COMPLETED", 2710),
+        ("INSUFFICIENT_FUNDS", "PAYPAL_PAY_LATER", 520.00, "COMPLETED", 2580),
+        ("INSUFFICIENT_FUNDS", "PAYPAL_PAY_LATER", 290.00, "COMPLETED", 2640),
+        ("INSUFFICIENT_FUNDS", "PAYPAL_PAY_LATER", 340.00, "COMPLETED", 2550),
+        ("INSUFFICIENT_FUNDS", "PAYPAL_PAY_LATER", 410.00, "COMPLETED", 2490),
+        ("INSUFFICIENT_FUNDS", "PAYPAL_PAY_LATER", 450.00, "COMPLETED", 2680),
+        ("INSUFFICIENT_FUNDS", "PAYPAL_PAY_LATER", 380.00, "COMPLETED", 2730),
+        ("LIMIT_EXCEEDED",     "PAYPAL_PAY_LATER", 500.00, "COMPLETED", 2600),
+        ("LIMIT_EXCEEDED",     "PAYPAL_PAY_LATER", 310.00, "COMPLETED", 2540),
+
+        # PAYPAL_VERIFIED_WALLET (8 items = $3,600.00)
+        ("FRAUD_SUSPECTED",    "PAYPAL_VERIFIED_WALLET", 450.00, "COMPLETED", 2590),
+        ("FRAUD_SUSPECTED",    "PAYPAL_VERIFIED_WALLET", 520.00, "COMPLETED", 2630),
+        ("FRAUD_SUSPECTED",    "PAYPAL_VERIFIED_WALLET", 380.00, "COMPLETED", 2480),
+        ("FRAUD_SUSPECTED",    "PAYPAL_VERIFIED_WALLET", 420.00, "COMPLETED", 2720),
+        ("FRAUD_SUSPECTED",    "PAYPAL_VERIFIED_WALLET", 600.00, "COMPLETED", 2670),
+        ("FRAUD_SUSPECTED",    "PAYPAL_VERIFIED_WALLET", 350.00, "COMPLETED", 2530),
+        ("FRAUD_SUSPECTED",    "PAYPAL_VERIFIED_WALLET", 480.00, "COMPLETED", 2690),
+        ("LIMIT_EXCEEDED",     "PAYPAL_VERIFIED_WALLET", 400.00, "COMPLETED", 2510),
+
+        # PAYPAL_DYNAMIC_FX (5 items = $1,420.00)
+        ("CURRENCY_MISMATCH",  "PAYPAL_DYNAMIC_FX", 195.00, "COMPLETED", 2580),
+        ("CURRENCY_MISMATCH",  "PAYPAL_DYNAMIC_FX", 280.00, "COMPLETED", 2640),
+        ("CURRENCY_MISMATCH",  "PAYPAL_DYNAMIC_FX", 345.00, "COMPLETED", 2700),
+        ("CURRENCY_MISMATCH",  "PAYPAL_DYNAMIC_FX", 290.00, "COMPLETED", 2520),
+        ("CURRENCY_MISMATCH",  "PAYPAL_DYNAMIC_FX", 310.00, "COMPLETED", 2610),
+
+        # PAYPAL_FASTLANE (4 items = $1,240.00)
+        ("BANK_TIMEOUT",       "PAYPAL_FASTLANE", 180.00, "COMPLETED", 2560),
+        ("BANK_TIMEOUT",       "PAYPAL_FASTLANE", 320.00, "COMPLETED", 2650),
+        ("BANK_TIMEOUT",       "PAYPAL_FASTLANE", 450.00, "COMPLETED", 2490),
+        ("LIMIT_EXCEEDED",     "PAYPAL_FASTLANE", 290.00, "COMPLETED", 2620),
+
+        # ABANDONED (7 items = $1,980.00, no rescue)
+        ("INSUFFICIENT_FUNDS", "ABANDONED", 280.00, "ABANDONED", 3420),
+        ("INSUFFICIENT_FUNDS", "ABANDONED", 310.00, "ABANDONED", 3180),
+        ("INSUFFICIENT_FUNDS", "ABANDONED", 220.00, "ABANDONED", 3550),
+        ("FRAUD_SUSPECTED",    "ABANDONED", 520.00, "ABANDONED", 3800),
+        ("FRAUD_SUSPECTED",    "ABANDONED", 480.00, "ABANDONED", 3250),
+        ("LIMIT_EXCEEDED",     "ABANDONED", 350.00, "ABANDONED", 2950),
+        ("BANK_TIMEOUT",       "ABANDONED", 190.00, "ABANDONED", 3600),
     ]
-    base_time = datetime.now() - timedelta(hours=12)
-    for i, (code, strat, amt, status) in enumerate(strategies * 4):
+
+    base_time = datetime.utcnow() - timedelta(hours=14)
+    for i, (code, strat, amt, status, res_ms) in enumerate(records):
         tx_id = f"TX-INIT-{1000 + i}"
-        t = base_time + timedelta(minutes=i * 18)
+        t = base_time + timedelta(minutes=i * 22)
         cur.execute("""
         INSERT INTO transactions (id, timestamp, customer_name, customer_email, amount, currency, initial_status, decline_code, recovery_strategy, final_status, paypal_order_id, recovered_amount, resolution_time_ms)
         VALUES (?, ?, ?, ?, ?, 'USD', 'DECLINED', ?, ?, ?, ?, ?, ?)
         """, (
-            tx_id, t.isoformat(), f"Shopper_{100+i}", f"shopper_{100+i}@domain.com", amt, code, strat,
-            "COMPLETED" if status == "RECOVERED" else "ABANDONED",
-            f"PP-REC-{uuid.uuid4().hex[:6].upper()}" if status == "RECOVERED" else None,
-            amt if status == "RECOVERED" else 0.0,
-            random.randint(1200, 3800)
+            tx_id, t.strftime("%Y-%m-%d %H:%M:%S"), f"Shopper_{100+i}", f"shopper_{100+i}@domain.com", amt, code, strat,
+            status,
+            f"PP-REC-{uuid.uuid4().hex[:6].upper()}" if status == "COMPLETED" else None,
+            amt if status == "COMPLETED" else 0.0,
+            res_ms
         ))
 
 # Initialize database on launch
@@ -295,9 +337,9 @@ def process_checkout():
     conn = sqlite3.connect(DB_PATH)
     cur = conn.cursor()
     cur.execute("""
-    INSERT INTO transactions (id, customer_name, customer_email, amount, currency, initial_status, decline_code, recovery_strategy, final_status, resolution_time_ms)
-    VALUES (?, ?, ?, ?, 'USD', 'DECLINED', ?, ?, 'IN_RECOVERY', ?)
-    """, (tx_id, customer_name, customer_email, amount, decline_code, top_choice, elapsed_ms))
+    INSERT INTO transactions (id, timestamp, customer_name, customer_email, amount, currency, initial_status, decline_code, recovery_strategy, final_status, resolution_time_ms)
+    VALUES (?, ?, ?, ?, ?, 'USD', 'DECLINED', ?, ?, 'IN_RECOVERY', ?)
+    """, (tx_id, datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S"), customer_name, customer_email, amount, decline_code, top_choice, elapsed_ms))
 
     # Log Agent Reasoning Traces
     traces = [
@@ -392,9 +434,10 @@ def capture_paypal_order():
     SET final_status = 'COMPLETED',
         paypal_order_id = ?,
         recovered_amount = ?,
-        resolution_time_ms = ?
+        resolution_time_ms = ?,
+        timestamp = ?
     WHERE id = ?
-    """, (order_id, amount, random.randint(850, 1800), tx_id))
+    """, (order_id, amount, random.randint(2450, 2750), datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S"), tx_id))
     conn.commit()
     conn.close()
 
@@ -421,10 +464,11 @@ def get_analytics():
     total_tx = total_tx or 0
     total_attempted_gmv = total_attempted_gmv or 0.0
 
-    cur.execute("SELECT COUNT(*), SUM(recovered_amount) FROM transactions WHERE final_status = 'COMPLETED'")
-    recovered_tx, recovered_gmv = cur.fetchone()
+    cur.execute("SELECT COUNT(*), SUM(recovered_amount), AVG(resolution_time_ms) FROM transactions WHERE final_status = 'COMPLETED'")
+    recovered_tx, recovered_gmv, avg_time = cur.fetchone()
     recovered_tx = recovered_tx or 0
     recovered_gmv = recovered_gmv or 0.0
+    avg_resolution_s = round((avg_time or 2618) / 1000.0, 1)
 
     cur.execute("SELECT decline_code, COUNT(*) FROM transactions GROUP BY decline_code")
     decline_breakdown = dict(cur.fetchall())
@@ -432,14 +476,28 @@ def get_analytics():
     cur.execute("SELECT recovery_strategy, COUNT(*) FROM transactions WHERE final_status = 'COMPLETED' GROUP BY recovery_strategy")
     strategy_breakdown = dict(cur.fetchall())
 
-    # Recent 10 transactions with traces
+    cur.execute("SELECT recovery_strategy, SUM(recovered_amount) FROM transactions WHERE final_status = 'COMPLETED' GROUP BY recovery_strategy")
+    gmv_by_tender = dict(cur.fetchall())
+
+    # Decline causes split: recovered vs lost
+    cur.execute("SELECT decline_code, final_status, COUNT(*) FROM transactions GROUP BY decline_code, final_status")
+    decline_outcomes = {}
+    for code, status, cnt in cur.fetchall():
+        if code not in decline_outcomes:
+            decline_outcomes[code] = {"recovered": 0, "lost": 0}
+        if status == "COMPLETED":
+            decline_outcomes[code]["recovered"] = cnt
+        else:
+            decline_outcomes[code]["lost"] = cnt
+
+    # Full transactions list (ordered by timestamp DESC)
     cur.execute("""
-    SELECT id, timestamp, customer_name, amount, decline_code, recovery_strategy, final_status, resolution_time_ms
-    FROM transactions ORDER BY timestamp DESC LIMIT 10
+    SELECT id, timestamp, customer_name, amount, decline_code, recovery_strategy, final_status, resolution_time_ms, paypal_order_id
+    FROM transactions ORDER BY timestamp DESC
     """)
-    recent = []
+    all_transactions = []
     for r in cur.fetchall():
-        recent.append({
+        all_transactions.append({
             "id": r[0],
             "timestamp": r[1],
             "customer": r[2],
@@ -447,12 +505,23 @@ def get_analytics():
             "decline_code": r[4],
             "strategy": r[5],
             "status": r[6],
-            "resolution_time_ms": r[7]
+            "resolution_time_ms": r[7],
+            "paypal_order_id": r[8]
         })
 
     conn.close()
 
     recovery_rate = round((recovered_tx / max(total_tx, 1)) * 100, 1)
+
+    # Sparkline: progressive cumulative recovery trend
+    sparkline = [
+        round(recovered_gmv * 0.18),
+        round(recovered_gmv * 0.38),
+        round(recovered_gmv * 0.55),
+        round(recovered_gmv * 0.72),
+        round(recovered_gmv * 0.88),
+        round(recovered_gmv)
+    ]
 
     return jsonify({
         "total_transactions": total_tx,
@@ -460,10 +529,33 @@ def get_analytics():
         "recovered_transactions": recovered_tx,
         "recovered_gmv": round(recovered_gmv, 2),
         "recovery_rate": recovery_rate,
+        "avg_time_s": avg_resolution_s,
         "decline_breakdown": decline_breakdown,
         "strategy_breakdown": strategy_breakdown,
-        "recent_transactions": recent
+        "gmv_by_tender": gmv_by_tender,
+        "decline_outcomes": decline_outcomes,
+        "sparkline": sparkline,
+        "funnel": {
+            "declined": total_tx,
+            "offered": total_tx,
+            "accepted": recovered_tx,
+            "captured": recovered_tx
+        },
+        "recent_transactions": all_transactions[:5],
+        "all_transactions": all_transactions
     })
+
+@app.route("/api/demo/reset", methods=["POST"])
+def demo_reset():
+    """Resets database to pristine baseline for hackathon recording."""
+    conn = sqlite3.connect(DB_PATH)
+    cur = conn.cursor()
+    cur.execute("DELETE FROM transactions")
+    cur.execute("DELETE FROM agent_logs")
+    seed_historical_data(cur)
+    conn.commit()
+    conn.close()
+    return jsonify({"status": "SUCCESS", "message": "Demo state reset to clean baseline."})
 
 @app.route("/api/copilot/chat", methods=["POST"])
 def copilot_chat():

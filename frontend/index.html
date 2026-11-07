@@ -431,6 +431,208 @@
     .row-just-rescued {
       animation: rowFlash 2s ease-out forwards;
     }
+
+    /* Executive War Room Layout (Single-screen 1080p) */
+    .hero-grid {
+      display: grid;
+      grid-template-columns: 1.5fr repeat(3, 1fr);
+      gap: 14px;
+    }
+    @media (max-width: 900px) {
+      .hero-grid { grid-template-columns: 1fr; }
+    }
+    .hero-main, .stat-card, .panel-card {
+      background: linear-gradient(180deg, rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0.02));
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 18px;
+      padding: 16px 18px;
+    }
+    .hero-main {
+      background: radial-gradient(500px 200px at 0 0, rgba(34, 197, 94, 0.16), transparent 70%), linear-gradient(180deg, rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0.02));
+      position: relative;
+      overflow: hidden;
+    }
+    .eyebrow, .stat-card span {
+      font-family: 'Inter', sans-serif;
+      font-size: 13px;
+      font-weight: 500;
+      color: #9aa4b8;
+    }
+    .hero-num {
+      font-family: 'Inter', sans-serif;
+      font-size: 42px;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      font-variant-numeric: tabular-nums;
+      color: #ffffff;
+      line-height: 1.05;
+      margin-top: 4px;
+    }
+    .hero-sub {
+      font-family: 'Inter', sans-serif;
+      font-size: 12px;
+      color: #94a3b8;
+      margin-top: 4px;
+    }
+    .hero-sub b {
+      color: #22c55e;
+      font-weight: 600;
+    }
+    .stat-card b {
+      display: block;
+      font-family: 'Inter', sans-serif;
+      font-size: 28px;
+      font-weight: 650;
+      margin: 4px 0 2px;
+      font-variant-numeric: tabular-nums;
+      color: #ffffff;
+      line-height: 1.1;
+    }
+    .stat-card small {
+      color: #6b7690;
+      font-family: 'Inter', sans-serif;
+      font-size: 11px;
+      display: block;
+    }
+
+    /* Recovery Funnel */
+    .funnel {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+    .f-step {
+      position: relative;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 9px 14px;
+      border-radius: 9px;
+      width: var(--w, 100%);
+      background: rgba(0, 112, 224, 0.16);
+      border: 1px solid rgba(0, 112, 224, 0.32);
+      transition: width 0.8s cubic-bezier(0.2, 0.8, 0.2, 1);
+      font-family: 'Inter', sans-serif;
+      font-size: 12px;
+      color: #e2e8f0;
+    }
+    .f-step.win {
+      background: rgba(34, 197, 94, 0.18);
+      border-color: rgba(34, 197, 94, 0.45);
+      color: #ffffff;
+    }
+    .f-step b {
+      font-family: 'JetBrains Mono', monospace;
+      font-variant-numeric: tabular-nums;
+      font-size: 13px;
+      font-weight: 600;
+    }
+
+    /* Live Activity Feed */
+    .feed-item {
+      display: grid;
+      grid-template-columns: 28px 1fr auto;
+      gap: 10px;
+      align-items: center;
+      padding: 7px 10px;
+      border-radius: 10px;
+      border: 1px solid rgba(255, 255, 255, 0.05);
+      background: rgba(255, 255, 255, 0.02);
+      transition: all 0.2s;
+    }
+    .feed-item:hover {
+      background: rgba(255, 255, 255, 0.04);
+      border-color: rgba(255, 255, 255, 0.1);
+    }
+    .feed-item.new {
+      animation: feedFlash 2.2s ease-out;
+    }
+    @keyframes feedFlash {
+      0% { background: rgba(34, 197, 94, 0.26); border-color: rgba(34, 197, 94, 0.55); transform: translateY(-6px); opacity: 0; }
+      15% { transform: none; opacity: 1; }
+      100% { background: rgba(255, 255, 255, 0.02); border-color: rgba(255, 255, 255, 0.05); }
+    }
+    .feed-avatar {
+      width: 28px;
+      height: 28px;
+      border-radius: 7px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Inter', sans-serif;
+      font-weight: 700;
+      font-size: 11px;
+    }
+    .feed-body {
+      min-width: 0;
+    }
+    .feed-title {
+      font-family: 'Inter', sans-serif;
+      font-size: 12px;
+      color: #f1f5f9;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      line-height: 1.2;
+    }
+    .feed-title b {
+      font-weight: 600;
+    }
+    .feed-sub {
+      font-family: 'Inter', sans-serif;
+      font-size: 11px;
+      color: #94a3b8;
+      margin-top: 1px;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+    .feed-sub i {
+      font-style: normal;
+      color: #64748b;
+      font-size: 10px;
+    }
+    .pill {
+      padding: 1px 6px;
+      border-radius: 99px;
+      font-family: 'Inter', sans-serif;
+      font-weight: 600;
+      font-size: 10px;
+      letter-spacing: 0.01em;
+    }
+    .feed-meta {
+      text-align: right;
+    }
+    .feed-meta .ok {
+      color: #22c55e;
+      font-family: 'Inter', sans-serif;
+      font-weight: 600;
+      font-size: 11px;
+      display: block;
+    }
+    .feed-meta .not-ok {
+      color: #94a3b8;
+      font-family: 'Inter', sans-serif;
+      font-weight: 500;
+      font-size: 11px;
+      display: block;
+    }
+    .feed-meta small {
+      display: block;
+      color: #6b7690;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 10px;
+      margin-top: 1px;
+    }
+
+    @keyframes heroPulse {
+      0% { transform: scale(1); }
+      30% { transform: scale(1.02); filter: drop-shadow(0 0 16px rgba(34,197,94,0.45)); }
+      100% { transform: scale(1); filter: none; }
+    }
+    .pulse-green {
+      animation: heroPulse 1.2s ease-out;
+    }
   </style>
 </head>
 <body class="selection:bg-[#0070e0] selection:text-white">
@@ -751,101 +953,188 @@
   </main>
 
   <!-- ========================================================================= -->
-  <!-- TAB 2: MERCHANT WAR ROOM (EXECUTIVE DASHBOARD - COMPACT 1080P) -->
+  <!-- TAB 2: MERCHANT WAR ROOM (SINGLE-SCREEN EXECUTIVE DASHBOARD - 1080P) -->
   <!-- ========================================================================= -->
   <section id="tab-warroom-view" class="hidden stage-container">
-    <div class="pt-6 pb-12 space-y-5">
+    <div class="pt-4 pb-8 space-y-3.5">
       
-      <div class="flex items-center justify-between border-b border-white/10 pb-3.5">
-        <div class="flex items-center gap-3">
+      <!-- Top Title Bar -->
+      <div class="flex items-center justify-between border-b border-white/10 pb-2.5">
+        <div class="flex items-center gap-2.5">
           <h2 class="text-base font-bold text-white flex items-center gap-2">
-            <i class="fa-solid fa-chart-line text-[#0070e0]"></i> Merchant AI Operations War Room
+            <i class="fa-solid fa-chart-line text-[#0070e0]"></i> Merchant overview
           </h2>
-          <span class="text-[11px] font-mono px-2 py-0.5 rounded-full bg-white/5 border border-white/10 text-slate-300">
-            Demo baseline dataset + Live incremental updates
+          <span class="text-xs px-2.5 py-0.5 rounded-full bg-white/5 border border-white/10 text-slate-300 font-medium">
+            Demo baseline + live updates
           </span>
         </div>
-      </div>
-
-      <!-- 3 Key Metric Cards (Compact ~80px) -->
-      <div class="grid grid-cols-1 sm:grid-cols-3 gap-3.5">
-        <div class="p-3.5 rounded-xl bg-white/[0.04] border border-white/10">
-          <span class="text-xs text-slate-400 block mb-1">Rescued GMV</span>
-          <div id="kpi-gmv" class="text-3xl font-semibold font-mono num-tabular text-emerald-400 leading-tight">$8,860.00</div>
-          <div class="text-[11px] text-slate-400 mt-1">
-            <span class="text-emerald-400 font-medium">↑ 21.4%</span> net conversion lift (demo baseline)
-          </div>
-        </div>
-
-        <div class="p-3.5 rounded-xl bg-white/[0.04] border border-white/10">
-          <span class="text-xs text-slate-400 block mb-1">Rescue rate</span>
-          <div id="kpi-rate" class="text-3xl font-semibold font-mono num-tabular text-[#0070e0] leading-tight">87.5%</div>
-          <div class="text-[11px] text-slate-400 mt-1">
-            Rescued ÷ declined carts (demo baseline)
-          </div>
-        </div>
-
-        <div class="p-3.5 rounded-xl bg-white/[0.04] border border-white/10">
-          <span class="text-xs text-slate-400 block mb-1">Rescued orders</span>
-          <div id="kpi-count" class="text-3xl font-semibold font-mono num-tabular text-purple-400 leading-tight">28 Carts</div>
-          <div class="text-[11px] text-slate-400 mt-1">
-            of 32 declined carts (demo baseline)
-          </div>
+        <div class="flex items-center gap-3">
+          <span class="text-xs text-slate-400 font-medium flex items-center gap-1.5">
+            <i class="fa-regular fa-calendar text-slate-500"></i> Last 30 days
+          </span>
+          <button onclick="openTransactionsDrawer()" class="px-3 py-1 rounded-lg bg-white/5 hover:bg-white/10 border border-white/10 text-xs font-medium text-slate-200 transition flex items-center gap-1.5">
+            <i class="fa-solid fa-table-list text-[#0070e0]"></i>
+            <span>View all transactions</span>
+          </button>
         </div>
       </div>
 
-      <!-- Charts Row (Capped at 220px) -->
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <div class="p-4 rounded-xl bg-white/[0.04] border border-white/10">
-          <h4 class="text-xs font-semibold text-slate-300 mb-2 flex items-center gap-2">
-            <i class="fa-solid fa-chart-bar text-amber-400"></i> Ingested decline causes
-          </h4>
-          <div class="h-48">
-            <canvas id="chart-declines"></canvas>
+      <!-- Top Row: Hero KPI + 3 Stats with Metric Definitions -->
+      <div class="hero-grid">
+        <div class="hero-main" id="hero-card-container">
+          <span class="eyebrow">Revenue recovered from declines</span>
+          <div class="hero-num" id="hero-gmv" data-v="10900">$10,900</div>
+          <div class="hero-sub flex items-center gap-1.5">
+            <b id="hero-diff">+$240</b>
+            <span id="hero-sub-text">just now · from 30 orders</span>
+          </div>
+          <canvas id="spark" height="38" class="w-full mt-1.5"></canvas>
+        </div>
+
+        <div class="stat-card">
+          <span>Recovery rate</span>
+          <b id="hero-rate">81.1%</b>
+          <small>recovered ÷ declined carts</small>
+        </div>
+
+        <div class="stat-card">
+          <span>Orders recovered</span>
+          <b id="hero-orders">30</b>
+          <small id="hero-orders-def">of 37 declined</small>
+        </div>
+
+        <div class="stat-card">
+          <span>Avg time to recover</span>
+          <b id="hero-time">2.6 s</b>
+          <small>decline → captured</small>
+        </div>
+      </div>
+
+      <!-- Middle Row: Recovery Funnel (Div-based) & Donut Chart (GMV per Tender) -->
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-3.5">
+        <!-- Recovery Funnel -->
+        <div class="panel-card flex flex-col justify-between" style="min-height: 185px;">
+          <div>
+            <div class="flex items-center justify-between mb-2">
+              <h4 class="text-xs font-semibold text-slate-200">Recovery funnel</h4>
+              <span class="text-[11px] text-slate-400">Decline to capture flow</span>
+            </div>
+            <div class="funnel">
+              <div class="f-step" id="fn-declined" style="--w: 100%">
+                <span>Declined</span><b id="fn-val-declined">37</b>
+              </div>
+              <div class="f-step" id="fn-offered" style="--w: 100%">
+                <span>Alternative offered</span><b id="fn-val-offered">37</b>
+              </div>
+              <div class="f-step" id="fn-accepted" style="--w: 81%">
+                <span>Shopper accepted</span><b id="fn-val-accepted">30</b>
+              </div>
+              <div class="f-step win" id="fn-captured" style="--w: 81%">
+                <span>Order captured</span><b id="fn-val-captured">30</b>
+              </div>
+            </div>
+          </div>
+          <div class="text-[11px] text-slate-500 pt-2 border-t border-white/5 flex items-center justify-between">
+            <span>Overall recovery yield</span>
+            <span class="font-mono text-emerald-400 font-semibold" id="fn-rate-label">81.1% captured</span>
           </div>
         </div>
 
-        <div class="p-4 rounded-xl bg-white/[0.04] border border-white/10">
-          <h4 class="text-xs font-semibold text-slate-300 mb-2 flex items-center gap-2">
-            <i class="fa-brands fa-paypal text-[#ffc439]"></i> Rescued volume by PayPal tender
-          </h4>
-          <div class="h-48">
-            <canvas id="chart-strategies"></canvas>
+        <!-- Donut: Recovered revenue by PayPal option -->
+        <div class="panel-card flex flex-col justify-between" style="min-height: 185px;">
+          <div class="flex items-center justify-between mb-1">
+            <h4 class="text-xs font-semibold text-slate-200">Recovered revenue by PayPal option</h4>
+            <span class="text-[11px] text-slate-400">GMV recovered per tender</span>
+          </div>
+          <div class="relative flex items-center justify-center my-auto" style="height: 140px;">
+            <canvas id="chart-tender-donut"></canvas>
+            <div class="absolute inset-0 flex flex-col items-center justify-center pointer-events-none" style="margin-right: 96px;">
+              <span class="text-[10px] text-slate-400 font-medium">Total recovered</span>
+              <span id="donut-total" class="text-base font-bold text-white font-mono">$10,900</span>
+            </div>
+          </div>
+          <div class="text-[11px] text-slate-500 pt-1.5 border-t border-white/5 flex items-center justify-between">
+            <span>Primary rescue tender</span>
+            <span class="font-mono text-[#0070e0] font-semibold" id="donut-top-tender">Pay in 4 ($4,640.00)</span>
           </div>
         </div>
       </div>
 
-      <!-- Live Audit Table (Top 5 rows default) -->
-      <div class="p-4 rounded-xl bg-white/[0.04] border border-white/10">
-        <div class="flex items-center justify-between mb-2.5 text-xs">
-          <h4 class="font-semibold text-slate-300 flex items-center gap-2">
-            <i class="fa-solid fa-list text-[#0070e0]"></i> Live audit feed
-          </h4>
-          <span class="text-[11px] text-slate-400">Showing recent captured transactions</span>
+      <!-- Bottom Row: Why carts decline & outcome (Stacked bar) & Live Activity Feed -->
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-3.5">
+        <!-- Why carts decline & outcome (stacked bar) -->
+        <div class="panel-card flex flex-col justify-between" style="min-height: 200px;">
+          <div class="flex items-center justify-between mb-1.5">
+            <h4 class="text-xs font-semibold text-slate-200">Why carts decline & outcome</h4>
+            <span class="text-[11px] text-slate-400">Rescued vs not recovered</span>
+          </div>
+          <div style="height: 165px;">
+            <canvas id="chart-decline-outcomes"></canvas>
+          </div>
         </div>
 
-        <div class="overflow-x-auto">
-          <table class="w-full text-left text-xs font-mono">
-            <thead class="border-b border-white/10 text-slate-400 text-[11px]">
-              <tr>
-                <th class="pb-2 font-medium">Tx ID</th>
-                <th class="pb-2 font-medium">Customer</th>
-                <th class="pb-2 font-medium text-right">Amount</th>
-                <th class="pb-2 font-medium">Decline cause</th>
-                <th class="pb-2 font-medium">Rescued tender</th>
-                <th class="pb-2 font-medium">Status</th>
-                <th class="pb-2 font-medium text-right">Time to resolution (end-to-end)</th>
-              </tr>
-            </thead>
-            <tbody id="warroom-audit-body" class="divide-y divide-white/5 text-slate-300">
-              <!-- Populated via loadAnalytics() -->
-            </tbody>
-          </table>
+        <!-- Live activity feed (Cards, newest on top) -->
+        <div class="panel-card flex flex-col justify-between" style="min-height: 200px;">
+          <div class="flex items-center justify-between mb-1.5">
+            <div class="flex items-center gap-2">
+              <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+              <h4 class="text-xs font-semibold text-slate-200">Live activity</h4>
+            </div>
+            <button onclick="openTransactionsDrawer()" class="text-[11px] text-[#0070e0] hover:text-blue-400 transition font-medium flex items-center gap-1">
+              View all transactions <i class="fa-solid fa-arrow-right text-[9px]"></i>
+            </button>
+          </div>
+          <div id="live-feed-list" class="flex-1 flex flex-col justify-start space-y-1.5 overflow-hidden">
+            <!-- Latest 5 cards populated via loadAnalytics() -->
+          </div>
         </div>
       </div>
 
     </div>
   </section>
+
+  <!-- ========================================================================= -->
+  <!-- SLIDE-OVER DRAWER: FULL SQLITE AUDIT LOG -->
+  <!-- ========================================================================= -->
+  <div id="tx-drawer" class="fixed inset-0 z-50 hidden transition-opacity">
+    <div class="absolute inset-0 bg-black/60 backdrop-blur-sm" onclick="closeTransactionsDrawer()"></div>
+    <div class="absolute top-0 right-0 h-full w-full max-w-3xl bg-[#0b101c] border-l border-white/10 shadow-2xl flex flex-col z-10">
+      <div class="flex items-center justify-between p-4 border-b border-white/10">
+        <div>
+          <h3 class="text-sm font-bold text-white flex items-center gap-2">
+            <i class="fa-solid fa-database text-[#0070e0]"></i> SQLite Transaction Audit Log
+          </h3>
+          <p class="text-[11px] text-slate-400 mt-0.5">Comprehensive audit trail of decline telemetry, diagnostic logs, and PayPal captures</p>
+        </div>
+        <button onclick="closeTransactionsDrawer()" class="w-7 h-7 rounded-lg bg-white/5 hover:bg-white/10 border border-white/10 text-slate-300 flex items-center justify-center transition">
+          <i class="fa-solid fa-xmark text-xs"></i>
+        </button>
+      </div>
+
+      <div class="p-3 border-b border-white/5 bg-white/[0.02]">
+        <input type="text" id="tx-search-input" placeholder="Search customer, ID, decline cause, or tender..." oninput="filterTransactionsTable()" class="w-full h-8 px-3 text-xs bg-black/40 border border-white/10 rounded-md text-white placeholder-slate-500 focus:outline-none focus:border-[#0070e0]">
+      </div>
+
+      <div class="flex-1 overflow-y-auto p-4">
+        <table class="w-full text-left text-xs font-mono">
+          <thead class="border-b border-white/10 text-slate-400 text-[11px] sticky top-0 bg-[#0b101c]">
+            <tr>
+              <th class="pb-2 font-medium">Tx ID</th>
+              <th class="pb-2 font-medium">Customer</th>
+              <th class="pb-2 font-medium text-right">Amount</th>
+              <th class="pb-2 font-medium">Decline cause</th>
+              <th class="pb-2 font-medium">Rescued tender</th>
+              <th class="pb-2 font-medium">Status</th>
+              <th class="pb-2 font-medium text-right">Time to recover (decline → capture)</th>
+            </tr>
+          </thead>
+          <tbody id="drawer-audit-body" class="divide-y divide-white/5 text-slate-300">
+            <!-- All rows populated via loadAnalytics() -->
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
 
   <!-- ========================================================================= -->
   <!-- FLOATING COLLAPSIBLE SIMULATION PILL (BOTTOM CENTER) -->
@@ -1242,9 +1531,17 @@
       btnPay.disabled = false;
 
       setScenario('INSUFFICIENT_FUNDS');
+
+      currentTxId = null;
+      fetch('/api/demo/reset', { method: 'POST' }).then(() => {
+        const warroomView = document.getElementById('tab-warroom-view');
+        if (warroomView && !warroomView.classList.contains('hidden')) {
+          loadAnalytics();
+        }
+      }).catch(console.error);
     }
 
-    // Guarded Keyboard Shortcuts: 'D' to reset, 'H' to toggle simulation pill
+    // Guarded Keyboard Shortcuts: 'D' to reset, 'H' to toggle simulation pill, 'Esc' to close drawer
     window.addEventListener('keydown', (e) => {
       const activeEl = document.activeElement;
       const tag = (activeEl && activeEl.tagName) || '';
@@ -1257,6 +1554,8 @@
         const pillContainer = document.getElementById('sim-pill-container');
         simPillHidden = !simPillHidden;
         pillContainer.classList.toggle('hidden', simPillHidden);
+      } else if (e.key === 'Escape') {
+        closeTransactionsDrawer();
       }
     });
 
@@ -1265,54 +1564,234 @@
       box.classList.toggle('hidden');
     }
 
+    // Number count-up animation
+    function countUp(el, to, ms = 750) {
+      if (!el) return;
+      const from = +el.dataset.v || 0;
+      const t0 = performance.now();
+      const f = t => {
+        const p = Math.min((t - t0) / ms, 1);
+        el.textContent = '$' + Math.round(from + (to - from) * p).toLocaleString();
+        if (p < 1) requestAnimationFrame(f);
+        else el.dataset.v = to;
+      };
+      requestAnimationFrame(f);
+    }
+
+    // Canvas sparkline renderer
+    function drawSparkline(canvasId, points) {
+      const canvas = document.getElementById(canvasId);
+      if (!canvas) return;
+      const ctx = canvas.getContext('2d');
+      const dpr = window.devicePixelRatio || 1;
+      const rect = canvas.getBoundingClientRect();
+      if (!rect.width) return;
+      canvas.width = rect.width * dpr;
+      canvas.height = (rect.height || 38) * dpr;
+      ctx.scale(dpr, dpr);
+      ctx.clearRect(0, 0, rect.width, rect.height);
+
+      const min = Math.min(...points) * 0.85;
+      const max = Math.max(...points) * 1.05;
+      const stepX = (rect.width - 12) / (points.length - 1);
+      const getY = (val) => rect.height - 6 - ((val - min) / Math.max(max - min, 1)) * (rect.height - 12);
+
+      // Area gradient
+      const grad = ctx.createLinearGradient(0, 0, 0, rect.height);
+      grad.addColorStop(0, 'rgba(34, 197, 94, 0.35)');
+      grad.addColorStop(1, 'rgba(34, 197, 94, 0.0)');
+
+      ctx.beginPath();
+      ctx.moveTo(6, getY(points[0]));
+      for (let i = 1; i < points.length; i++) {
+        const prevX = 6 + (i - 1) * stepX;
+        const prevY = getY(points[i - 1]);
+        const currX = 6 + i * stepX;
+        const currY = getY(points[i]);
+        const cpX = (prevX + currX) / 2;
+        ctx.bezierCurveTo(cpX, prevY, cpX, currY, currX, currY);
+      }
+      ctx.lineTo(6 + (points.length - 1) * stepX, rect.height);
+      ctx.lineTo(6, rect.height);
+      ctx.closePath();
+      ctx.fillStyle = grad;
+      ctx.fill();
+
+      // Line stroke
+      ctx.beginPath();
+      ctx.moveTo(6, getY(points[0]));
+      for (let i = 1; i < points.length; i++) {
+        const prevX = 6 + (i - 1) * stepX;
+        const prevY = getY(points[i - 1]);
+        const currX = 6 + i * stepX;
+        const currY = getY(points[i]);
+        const cpX = (prevX + currX) / 2;
+        ctx.bezierCurveTo(cpX, prevY, cpX, currY, currX, currY);
+      }
+      ctx.strokeStyle = '#22c55e';
+      ctx.lineWidth = 2.2;
+      ctx.stroke();
+
+      // Endpoint circle
+      const lastX = 6 + (points.length - 1) * stepX;
+      const lastY = getY(points[points.length - 1]);
+      ctx.beginPath();
+      ctx.arc(lastX, lastY, 3, 0, Math.PI * 2);
+      ctx.fillStyle = '#22c55e';
+      ctx.fill();
+    }
+
+    // Drawer management
+    function openTransactionsDrawer() {
+      document.getElementById('tx-drawer').classList.remove('hidden');
+    }
+
+    function closeTransactionsDrawer() {
+      document.getElementById('tx-drawer').classList.add('hidden');
+    }
+
+    function filterTransactionsTable() {
+      const q = (document.getElementById('tx-search-input').value || '').toLowerCase().trim();
+      const rows = document.querySelectorAll('#drawer-audit-body tr');
+      rows.forEach(r => {
+        r.style.display = r.innerText.toLowerCase().includes(q) ? '' : 'none';
+      });
+    }
+
     // Merchant War Room Analytics
     async function loadAnalytics() {
       try {
         const resp = await fetch('/api/merchant/analytics');
         const data = await resp.json();
 
-        // Sync KPIs
-        document.getElementById('kpi-gmv').innerText = `$${data.recovered_gmv.toLocaleString(undefined, {minimumFractionDigits: 2})}`;
-        document.getElementById('kpi-rate').innerText = `${data.recovery_rate}%`;
-        document.getElementById('kpi-count').innerText = `${data.recovered_transactions} Carts`;
-
-        const tbody = document.getElementById('warroom-audit-body');
-        tbody.innerHTML = '';
+        // 1. Hero KPI + Sparkline
+        const heroEl = document.getElementById('hero-gmv');
+        countUp(heroEl, data.recovered_gmv);
         
-        // Show latest 5 rows by default to fit on 1080p
-        const displayRows = data.recent_transactions.slice(0, 5);
-        displayRows.forEach(tx => {
-          const tr = document.createElement('tr');
-          const isJustRescued = tx.id === currentTxId;
-          const tenderMeta = TENDER[tx.strategy] || { label: tx.strategy.replace('PAYPAL_', ''), color: '#64748b' };
-          const causeLabel = DECLINE_LABELS[tx.decline_code] || tx.decline_code;
+        const heroDiff = document.getElementById('hero-diff');
+        const heroSub = document.getElementById('hero-sub-text');
+        const heroCard = document.getElementById('hero-card-container');
+        
+        if (currentTxId) {
+          heroDiff.innerText = `+$${currentCartAmount.toFixed(0)}`;
+          heroSub.innerText = `just now · from ${data.recovered_transactions} orders`;
+          if (heroCard) {
+            heroCard.classList.remove('pulse-green');
+            void heroCard.offsetWidth;
+            heroCard.classList.add('pulse-green');
+          }
+        } else {
+          heroDiff.innerText = `+$240`;
+          heroSub.innerText = `baseline · from ${data.recovered_transactions} orders`;
+        }
 
-          tr.className = isJustRescued ? "row-just-rescued" : "hover:bg-white/[0.02]";
+        setTimeout(() => {
+          drawSparkline('spark', data.sparkline || [2100, 4300, 6200, 7800, 9200, data.recovered_gmv]);
+        }, 60);
 
-          tr.innerHTML = `
-            <td class="py-2.5 text-slate-400">
-              ${isJustRescued ? '<span class="inline-flex items-center gap-1 font-semibold text-emerald-400 mr-1"><span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-ping"></span>Just now</span>' : ''}
-              ${tx.id}
-            </td>
-            <td class="py-2.5 text-slate-200">${tx.customer}</td>
-            <td class="py-2.5 font-semibold text-white num-tabular text-right">$${tx.amount.toFixed(2)}</td>
-            <td class="py-2.5 text-slate-300">${causeLabel}</td>
-            <td class="py-2.5">
-              ${tx.status === 'COMPLETED' 
-                ? `<span class="px-2 py-0.5 rounded text-[10px] font-semibold" style="background:${tenderMeta.color}20; color:${tenderMeta.color}; border:1px solid ${tenderMeta.color}40">${tenderMeta.label}</span>`
-                : '<span class="text-slate-500 font-normal">No rescue</span>'}
-            </td>
-            <td class="py-2.5">
-              <span class="px-2 py-0.5 rounded text-[10px] font-semibold ${tx.status === 'COMPLETED' ? 'bg-emerald-500/20 text-emerald-400' : 'bg-red-500/20 text-red-400'}">
-                ${tx.status === 'COMPLETED' ? 'Completed' : 'Abandoned'}
-              </span>
-            </td>
-            <td class="py-2.5 text-[#0070e0] num-tabular text-right">${tx.resolution_time_ms.toLocaleString()} ms</td>
-          `;
-          tbody.appendChild(tr);
-        });
+        // 2. Three Stats with Explicit Definitions
+        document.getElementById('hero-rate').innerText = `${data.recovery_rate}%`;
+        document.getElementById('hero-orders').innerText = `${data.recovered_transactions}`;
+        document.getElementById('hero-orders-def').innerText = `of ${data.total_transactions} declined`;
+        document.getElementById('hero-time').innerText = `${data.avg_time_s} s`;
+
+        // 3. Recovery Funnel
+        const fn = data.funnel || { declined: data.total_transactions, offered: data.total_transactions, accepted: data.recovered_transactions, captured: data.recovered_transactions };
+        document.getElementById('fn-val-declined').innerText = fn.declined;
+        document.getElementById('fn-val-offered').innerText = fn.offered;
+        document.getElementById('fn-val-accepted').innerText = fn.accepted;
+        document.getElementById('fn-val-captured').innerText = fn.captured;
+        document.getElementById('fn-rate-label').innerText = `${data.recovery_rate}% captured`;
+
+        const maxVal = Math.max(fn.declined, 1);
+        document.getElementById('fn-declined').style.setProperty('--w', '100%');
+        document.getElementById('fn-offered').style.setProperty('--w', '100%');
+        document.getElementById('fn-accepted').style.setProperty('--w', `${Math.max(Math.round((fn.accepted / maxVal) * 100), 20)}%`);
+        document.getElementById('fn-captured').style.setProperty('--w', `${Math.max(Math.round((fn.captured / maxVal) * 100), 20)}%`);
+
+        // 4. Donut Chart (Recovered Revenue by PayPal Option)
+        const donutTotal = document.getElementById('donut-total');
+        if (donutTotal) donutTotal.innerText = `$${Math.round(data.recovered_gmv).toLocaleString()}`;
+        
+        const payLaterGmv = (data.gmv_by_tender && data.gmv_by_tender.PAYPAL_PAY_LATER) || 0;
+        const topTenderLabel = document.getElementById('donut-top-tender');
+        if (topTenderLabel) topTenderLabel.innerText = `Pay in 4 ($${payLaterGmv.toLocaleString(undefined, {minimumFractionDigits: 2})})`;
 
         renderWarRoomCharts(data);
+
+        // 5. Live Activity Feed (Latest 5 Cards)
+        const feedList = document.getElementById('live-feed-list');
+        if (feedList) {
+          feedList.innerHTML = '';
+          const displayFeed = (data.recent_transactions || []).slice(0, 5);
+          displayFeed.forEach((tx, idx) => {
+            const isJustRescued = (tx.id === currentTxId);
+            const isCompleted = (tx.status === 'COMPLETED');
+            const tenderMeta = TENDER[tx.strategy] || { label: tx.strategy.replace('PAYPAL_', ''), color: '#64748b' };
+            const causeLabel = DECLINE_LABELS[tx.decline_code] || tx.decline_code;
+            const timeSec = (tx.resolution_time_ms / 1000).toFixed(1);
+
+            const card = document.createElement('div');
+            card.className = `feed-item ${isJustRescued ? 'new' : ''}`;
+            card.innerHTML = `
+              <div class="feed-avatar" style="${isCompleted ? 'background:rgba(34,197,94,.16);color:#22c55e;' : 'background:rgba(239,68,68,.14);color:#ef4444;'}">
+                ${isCompleted ? '<i class="fa-solid fa-check"></i>' : '<i class="fa-solid fa-xmark"></i>'}
+              </div>
+              <div class="feed-body">
+                <div class="feed-title">
+                  <b>${tx.customer}</b> · <span class="num-tabular font-semibold text-white font-mono">$${tx.amount.toFixed(2)}</span>
+                </div>
+                <div class="feed-sub">
+                  <span>${causeLabel}</span>
+                  <i>→</i>
+                  <em class="pill" style="background:${tenderMeta.color}20; color:${tenderMeta.color}; border:1px solid ${tenderMeta.color}40">${tenderMeta.label}</em>
+                </div>
+              </div>
+              <div class="feed-meta">
+                <span class="${isCompleted ? 'ok' : 'not-ok'}">${isCompleted ? 'Recovered' : 'Not recovered'}</span>
+                <small>${isJustRescued ? 'just now' : 'captured'} · ${timeSec} s</small>
+              </div>
+            `;
+            feedList.appendChild(card);
+          });
+        }
+
+        // 6. Slide-Over Full SQLite Audit Table
+        const tbody = document.getElementById('drawer-audit-body');
+        if (tbody && data.all_transactions) {
+          tbody.innerHTML = '';
+          data.all_transactions.forEach(tx => {
+            const isJustRescued = (tx.id === currentTxId);
+            const isCompleted = (tx.status === 'COMPLETED');
+            const tenderMeta = TENDER[tx.strategy] || { label: tx.strategy.replace('PAYPAL_', ''), color: '#64748b' };
+            const causeLabel = DECLINE_LABELS[tx.decline_code] || tx.decline_code;
+            const timeSec = (tx.resolution_time_ms / 1000).toFixed(1);
+
+            const tr = document.createElement('tr');
+            tr.className = isJustRescued ? "bg-emerald-500/10 font-semibold" : "hover:bg-white/[0.02]";
+            tr.innerHTML = `
+              <td class="py-2.5 text-slate-400 font-mono">
+                ${isJustRescued ? '<span class="inline-flex items-center gap-1 font-semibold text-emerald-400 mr-1"><span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-ping"></span>Just now</span>' : ''}
+                ${tx.id}
+              </td>
+              <td class="py-2.5 text-slate-200 font-medium">${tx.customer}</td>
+              <td class="py-2.5 font-semibold text-white num-tabular text-right">$${tx.amount.toFixed(2)}</td>
+              <td class="py-2.5 text-slate-300">${causeLabel}</td>
+              <td class="py-2.5">
+                ${isCompleted 
+                  ? `<span class="px-2 py-0.5 rounded text-[10px] font-semibold" style="background:${tenderMeta.color}20; color:${tenderMeta.color}; border:1px solid ${tenderMeta.color}40">${tenderMeta.label}</span>`
+                  : '<span class="text-slate-500 font-normal">No rescue</span>'}
+              </td>
+              <td class="py-2.5">
+                <span class="px-2 py-0.5 rounded text-[10px] font-semibold ${isCompleted ? 'bg-emerald-500/20 text-emerald-400' : 'bg-red-500/20 text-red-400'}">
+                  ${isCompleted ? 'Completed' : 'Abandoned'}
+                </span>
+              </td>
+              <td class="py-2.5 text-[#0070e0] font-mono text-right">${timeSec} s</td>
+            `;
+            tbody.appendChild(tr);
+          });
+        }
 
       } catch (err) {
         console.error(err);
@@ -1323,64 +1802,114 @@
       Chart.defaults.font.family = 'Inter, sans-serif';
       Chart.defaults.color = '#9aa4b8';
 
-      // Left Chart: Horizontal ranking of decline causes (Sorted Descending)
-      const declinePairs = Object.entries(data.decline_breakdown).map(([code, count]) => ({
-        label: DECLINE_LABELS[code] || code,
-        count: count
-      })).sort((a, b) => b.count - a.count);
+      // 1. Recovered revenue by PayPal option (Donut)
+      const tenderOrder = ['PAYPAL_PAY_LATER', 'PAYPAL_VERIFIED_WALLET', 'PAYPAL_DYNAMIC_FX', 'PAYPAL_FASTLANE'];
+      const tenderLabels = ['Pay in 4', 'Verified Wallet', 'Dynamic FX', 'Fastlane'];
+      const tenderColors = ['#0070e0', '#14b8a6', '#8b5cf6', '#ffc439'];
+      const gmvMap = data.gmv_by_tender || {};
+      const tenderValues = tenderOrder.map(k => gmvMap[k] || 0);
 
-      const ctx1 = document.getElementById('chart-declines');
-      if (ctx1) {
-        if (declineChart) declineChart.destroy();
-        declineChart = new Chart(ctx1, {
-          type: 'bar',
+      const ctxDonut = document.getElementById('chart-tender-donut');
+      if (ctxDonut) {
+        if (strategyChart) strategyChart.destroy();
+        strategyChart = new Chart(ctxDonut, {
+          type: 'doughnut',
           data: {
-            labels: declinePairs.map(p => p.label),
+            labels: tenderLabels,
             datasets: [{
-              data: declinePairs.map(p => p.count),
-              backgroundColor: '#f59e0b',
-              borderRadius: 5,
-              barThickness: 16
+              data: tenderValues,
+              backgroundColor: tenderColors,
+              borderWidth: 0,
+              hoverOffset: 3
             }]
           },
           options: {
-            indexAxis: 'y',
+            cutout: '72%',
             maintainAspectRatio: false,
-            plugins: { legend: { display: false } },
-            scales: {
-              x: { grid: { color: 'rgba(255,255,255,0.06)' }, ticks: { precision: 0, font: { family: 'JetBrains Mono', size: 10 } }, title: { display: true, text: 'Declined carts', font: { size: 10 } } },
-              y: { grid: { display: false }, ticks: { color: '#e8ecf4', font: { size: 11 } } }
+            plugins: {
+              legend: {
+                position: 'right',
+                labels: {
+                  usePointStyle: true,
+                  boxWidth: 7,
+                  color: '#cbd5e1',
+                  font: { family: 'Inter', size: 10, weight: '500' },
+                  padding: 8
+                }
+              },
+              tooltip: {
+                callbacks: {
+                  label: (ctx) => ` ${ctx.label}: $${Number(ctx.raw).toLocaleString(undefined, {minimumFractionDigits: 2})}`
+                }
+              }
             }
           }
         });
       }
 
-      // Right Chart: Rescued volume by Tender using unified TENDER colors
-      const stratEntries = Object.entries(data.strategy_breakdown);
-      const stratLabels = stratEntries.map(([s]) => TENDER[s]?.label || s.replace('PAYPAL_', ''));
-      const stratCounts = stratEntries.map(([, count]) => count);
-      const stratColors = stratEntries.map(([s]) => TENDER[s]?.color || '#0070e0');
+      // 2. Why carts decline & outcome (Stacked horizontal bar chart)
+      const declineOrder = ['INSUFFICIENT_FUNDS', 'FRAUD_SUSPECTED', 'LIMIT_EXCEEDED', 'CURRENCY_MISMATCH', 'BANK_TIMEOUT'];
+      const declineLabels = ['Insufficient funds', 'Suspected fraud', 'Limit exceeded', 'Currency mismatch', 'Bank timeout'];
+      const outcomes = data.decline_outcomes || {};
 
-      const ctx2 = document.getElementById('chart-strategies');
-      if (ctx2) {
-        if (strategyChart) strategyChart.destroy();
-        strategyChart = new Chart(ctx2, {
+      const rescuedCounts = declineOrder.map(k => outcomes[k]?.recovered || 0);
+      const lostCounts = declineOrder.map(k => outcomes[k]?.lost || 0);
+
+      const ctxStacked = document.getElementById('chart-decline-outcomes');
+      if (ctxStacked) {
+        if (declineChart) declineChart.destroy();
+        declineChart = new Chart(ctxStacked, {
           type: 'bar',
           data: {
-            labels: stratLabels,
-            datasets: [{
-              data: stratCounts,
-              backgroundColor: stratColors,
-              borderRadius: 5,
-              barThickness: 20
-            }]
+            labels: declineLabels,
+            datasets: [
+              {
+                label: 'Recovered',
+                data: rescuedCounts,
+                backgroundColor: '#22c55e',
+                borderRadius: 4,
+                barThickness: 13
+              },
+              {
+                label: 'Not recovered',
+                data: lostCounts,
+                backgroundColor: 'rgba(255, 255, 255, 0.14)',
+                borderRadius: 4,
+                barThickness: 13
+              }
+            ]
           },
           options: {
+            indexAxis: 'y',
             maintainAspectRatio: false,
-            plugins: { legend: { display: false } },
+            plugins: {
+              legend: {
+                position: 'bottom',
+                labels: {
+                  usePointStyle: true,
+                  boxWidth: 7,
+                  color: '#9aa4b8',
+                  font: { family: 'Inter', size: 10, weight: '500' },
+                  padding: 8
+                }
+              },
+              tooltip: {
+                callbacks: {
+                  label: (ctx) => ` ${ctx.dataset.label}: ${ctx.raw} carts`
+                }
+              }
+            },
             scales: {
-              x: { grid: { display: false }, ticks: { color: '#e8ecf4', font: { size: 11 } } },
-              y: { grid: { color: 'rgba(255,255,255,0.06)' }, ticks: { precision: 0, color: '#9aa4b8', font: { family: 'JetBrains Mono', size: 10 } }, title: { display: true, text: 'Rescued carts', font: { size: 10 } } }
+              x: {
+                stacked: true,
+                grid: { color: 'rgba(255, 255, 255, 0.05)' },
+                ticks: { precision: 0, color: '#64748b', font: { family: 'JetBrains Mono', size: 10 } }
+              },
+              y: {
+                stacked: true,
+                grid: { display: false },
+                ticks: { color: '#cbd5e1', font: { family: 'Inter', size: 10, weight: '500' } }
+              }
             }
           }
         });
