@@ -69,10 +69,8 @@ def init_db():
 def seed_historical_data(cur):
     # 29 Recovered transactions ($10,660.00 total) + 7 Abandoned transactions ($1,980.00) = 36 Total Declines
     # Avg resolution time ~2,610 ms (2.6 s)
-    # When user executes live $240 demo rescue, totals become:
-    # 30 Recovered, 37 Total Declines (81.1% recovery rate), $10,900.00 Recovered GMV
-    records = [
-        # PAYPAL_PAY_LATER (12 items = $4,400.00)
+    # Interleaved so recent baseline rows have a realistic mix (recovered vs failed)
+    completed = [
         ("INSUFFICIENT_FUNDS", "PAYPAL_PAY_LATER", 240.00, "COMPLETED", 2520),
         ("INSUFFICIENT_FUNDS", "PAYPAL_PAY_LATER", 360.00, "COMPLETED", 2610),
         ("INSUFFICIENT_FUNDS", "PAYPAL_PAY_LATER", 420.00, "COMPLETED", 2450),
@@ -85,8 +83,6 @@ def seed_historical_data(cur):
         ("INSUFFICIENT_FUNDS", "PAYPAL_PAY_LATER", 380.00, "COMPLETED", 2730),
         ("LIMIT_EXCEEDED",     "PAYPAL_PAY_LATER", 500.00, "COMPLETED", 2600),
         ("LIMIT_EXCEEDED",     "PAYPAL_PAY_LATER", 310.00, "COMPLETED", 2540),
-
-        # PAYPAL_VERIFIED_WALLET (8 items = $3,600.00)
         ("FRAUD_SUSPECTED",    "PAYPAL_VERIFIED_WALLET", 450.00, "COMPLETED", 2590),
         ("FRAUD_SUSPECTED",    "PAYPAL_VERIFIED_WALLET", 520.00, "COMPLETED", 2630),
         ("FRAUD_SUSPECTED",    "PAYPAL_VERIFIED_WALLET", 380.00, "COMPLETED", 2480),
@@ -95,29 +91,35 @@ def seed_historical_data(cur):
         ("FRAUD_SUSPECTED",    "PAYPAL_VERIFIED_WALLET", 350.00, "COMPLETED", 2530),
         ("FRAUD_SUSPECTED",    "PAYPAL_VERIFIED_WALLET", 480.00, "COMPLETED", 2690),
         ("LIMIT_EXCEEDED",     "PAYPAL_VERIFIED_WALLET", 400.00, "COMPLETED", 2510),
-
-        # PAYPAL_DYNAMIC_FX (5 items = $1,420.00)
         ("CURRENCY_MISMATCH",  "PAYPAL_DYNAMIC_FX", 195.00, "COMPLETED", 2580),
         ("CURRENCY_MISMATCH",  "PAYPAL_DYNAMIC_FX", 280.00, "COMPLETED", 2640),
         ("CURRENCY_MISMATCH",  "PAYPAL_DYNAMIC_FX", 345.00, "COMPLETED", 2700),
         ("CURRENCY_MISMATCH",  "PAYPAL_DYNAMIC_FX", 290.00, "COMPLETED", 2520),
         ("CURRENCY_MISMATCH",  "PAYPAL_DYNAMIC_FX", 310.00, "COMPLETED", 2610),
-
-        # PAYPAL_FASTLANE (4 items = $1,240.00)
         ("BANK_TIMEOUT",       "PAYPAL_FASTLANE", 180.00, "COMPLETED", 2560),
         ("BANK_TIMEOUT",       "PAYPAL_FASTLANE", 320.00, "COMPLETED", 2650),
         ("BANK_TIMEOUT",       "PAYPAL_FASTLANE", 450.00, "COMPLETED", 2490),
         ("LIMIT_EXCEEDED",     "PAYPAL_FASTLANE", 290.00, "COMPLETED", 2620),
-
-        # ABANDONED (7 items = $1,980.00, no rescue)
+    ]
+    abandoned = [
         ("INSUFFICIENT_FUNDS", "ABANDONED", 280.00, "ABANDONED", 3420),
-        ("INSUFFICIENT_FUNDS", "ABANDONED", 310.00, "ABANDONED", 3180),
-        ("INSUFFICIENT_FUNDS", "ABANDONED", 220.00, "ABANDONED", 3550),
         ("FRAUD_SUSPECTED",    "ABANDONED", 520.00, "ABANDONED", 3800),
-        ("FRAUD_SUSPECTED",    "ABANDONED", 480.00, "ABANDONED", 3250),
+        ("INSUFFICIENT_FUNDS", "ABANDONED", 310.00, "ABANDONED", 3180),
         ("LIMIT_EXCEEDED",     "ABANDONED", 350.00, "ABANDONED", 2950),
+        ("INSUFFICIENT_FUNDS", "ABANDONED", 220.00, "ABANDONED", 3550),
+        ("FRAUD_SUSPECTED",    "ABANDONED", 480.00, "ABANDONED", 3250),
         ("BANK_TIMEOUT",       "ABANDONED", 190.00, "ABANDONED", 3600),
     ]
+
+    records = []
+    c_idx, a_idx = 0, 0
+    for i in range(36):
+        if i in [4, 9, 15, 20, 25, 29, 33] and a_idx < len(abandoned):
+            records.append(abandoned[a_idx])
+            a_idx += 1
+        else:
+            records.append(completed[c_idx])
+            c_idx += 1
 
     base_time = datetime.utcnow() - timedelta(hours=14)
     for i, (code, strat, amt, status, res_ms) in enumerate(records):
