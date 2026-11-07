@@ -491,7 +491,7 @@
 
           <div class="flex items-center justify-between text-[10px] text-slate-500 font-mono px-1">
             <span>Backed by PayPal Buyer Protection (eligible purchases)</span>
-            <span class="text-slate-400">[PayPal Orders v2 Payload (Local Simulation)]</span>
+            <span class="text-slate-400">[Modeled on PayPal Orders v2 schema (Local)]</span>
           </div>
         </div>
 
@@ -993,7 +993,7 @@
     window.addEventListener('keydown', (e) => {
       const activeEl = document.activeElement;
       const tag = (activeEl && activeEl.tagName) || '';
-      if (tag === 'INPUT' || tag === 'TEXTAREA' || (activeEl && activeEl.isContentEditable)) {
+      if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT' || (activeEl && activeEl.isContentEditable)) {
         return;
       }
       if (e.key === 'd' || e.key === 'D') {

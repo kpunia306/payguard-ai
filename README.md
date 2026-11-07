@@ -117,6 +117,24 @@ Open `http://localhost:5055` in Google Chrome or Safari to test the live checkou
 
 ---
 
+## 🔍 Technical Transparency: Simulated vs. Real
+
+| Component | Prototype Status | Production Implementation |
+|---|---|---|
+| **Banking Declines** | **Simulated** (ISO 8583 response codes 51, 59, 82, 91) | Real gateway decline webhooks from acquirer/processor |
+| **ML Model** | **Real Scikit-Learn Model** (`model.joblib` trained on heuristic feature matrix) | Retrained continuously on live merchant settlement, dispute, and tender-switch logs |
+| **Feature Extraction** | **Real local pipeline** (Amount, category one-hot, session velocity) | Augmented with browser fingerprint, device velocity, and shopper loyalty tier |
+| **PayPal Integration** | **Local Simulation** (Modeled on PayPal Orders v2 REST schema) | Live OAuth 2.0 handshake to `api-m.sandbox.paypal.com` with PPCP client-side SDK |
+| **Persistence & Audit** | **Real SQLite Store** (`payguard.db`) with millisecond execution timing | Enterprise PostgreSQL / Snowflake event store with immutable audit trail |
+
+### What Production Looks Like
+In a live production deployment:
+1. **Acquiring Gateway Webhook:** PayGuard AI listens to the payment gateway's failure webhook (e.g. Stripe, Adyen, Braintree).
+2. **Online Learning Loop:** The ML model updates its propensity weights based on actual shopper conversion rates per alternative tender and post-transaction chargeback rates.
+3. **PayPal PPCP SDK Handshake:** The frontend dynamically renders the official PayPal JavaScript SDK button (`paypal.Buttons({ ... })`) with active client-side funding eligibility checks.
+
+---
+
 ## 📡 REST Endpoints
 
 | Method | Endpoint | Description |
