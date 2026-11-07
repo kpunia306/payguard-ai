@@ -148,24 +148,34 @@
   <!-- SIMULATION CONTROLS DRAWER (Clearly Labeled as Test DevTools) -->
   <!-- ========================================================================= -->
   <aside class="bg-black/40 border-b border-white/10 px-4 py-2 font-mono text-xs">
-    <div class="max-w-6xl mx-auto flex flex-wrap items-center justify-between gap-2">
-      <div class="flex items-center gap-2 text-slate-400">
+    <div class="max-w-6xl mx-auto flex flex-wrap items-center justify-between gap-3">
+      
+      <!-- Scenario Selection -->
+      <div class="flex items-center gap-2">
         <span class="w-2 h-2 rounded-full bg-amber-400"></span>
-        <span class="text-slate-300 font-semibold uppercase text-[11px] tracking-wider">Simulation Controls:</span>
-        <span class="hidden sm:inline text-slate-500">Inject banking gateway response code</span>
+        <span class="text-slate-300 font-semibold uppercase text-[11px] tracking-wider">Decline Ingestion:</span>
+        <button onclick="setScenario('INSUFFICIENT_FUNDS')" id="sc-insufficient" class="sc-btn px-2 py-0.5 rounded bg-[#0070e0]/20 text-[#0070e0] border border-[#0070e0]/40 font-semibold text-[11px]">
+          Code 51 (NSF)
+        </button>
+        <button onclick="setScenario('FRAUD_SUSPECTED')" id="sc-fraud" class="sc-btn px-2 py-0.5 rounded bg-white/5 text-slate-400 border border-white/10 text-[11px] hover:text-slate-200">
+          Code 59 (Fraud)
+        </button>
+        <button onclick="setScenario('CURRENCY_MISMATCH')" id="sc-currency" class="sc-btn px-2 py-0.5 rounded bg-white/5 text-slate-400 border border-white/10 text-[11px] hover:text-slate-200">
+          Code 82 (FX)
+        </button>
       </div>
 
-      <div class="flex items-center gap-2">
-        <button onclick="setScenario('INSUFFICIENT_FUNDS')" id="sc-insufficient" class="sc-btn px-2.5 py-1 rounded bg-[#0070e0]/20 text-[#0070e0] border border-[#0070e0]/40 font-semibold text-[11px]">
-          Code 51: Insufficient Funds
+      <!-- Eligibility Tier Test Toggle -->
+      <div class="flex items-center gap-2 border-l border-white/10 pl-3">
+        <span class="text-slate-400 text-[11px] uppercase tracking-wider">Cart Value:</span>
+        <button onclick="setCartTier(240)" id="tier-240" class="tier-btn px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-400 border border-emerald-500/40 font-semibold text-[11px]">
+          $240 (Pay in 4 Eligible)
         </button>
-        <button onclick="setScenario('FRAUD_SUSPECTED')" id="sc-fraud" class="sc-btn px-2.5 py-1 rounded bg-white/5 text-slate-400 border border-white/10 text-[11px] hover:text-slate-200">
-          Code 59: Suspected Fraud
-        </button>
-        <button onclick="setScenario('CURRENCY_MISMATCH')" id="sc-currency" class="sc-btn px-2.5 py-1 rounded bg-white/5 text-slate-400 border border-white/10 text-[11px] hover:text-slate-200">
-          Code 82: Cross-Border FX
+        <button onclick="setCartTier(1800)" id="tier-1800" class="tier-btn px-2 py-0.5 rounded bg-white/5 text-slate-400 border border-white/10 text-[11px] hover:text-slate-200">
+          $1,800 (Ineligible &gt; $1.5k)
         </button>
       </div>
+
     </div>
   </aside>
 
@@ -476,12 +486,13 @@
           <!-- PayPal Recovery CTA Button -->
           <button onclick="capturePayPalRescue()" id="btn-paypal-capture" class="w-full bg-[#ffc439] hover:bg-[#f2ba36] text-slate-950 font-bold py-3 px-4 rounded-xl text-xs transition flex items-center justify-center gap-2 shadow-md">
             <i class="fa-brands fa-paypal text-base text-[#003087]"></i>
-            <span id="btn-paypal-label">Pay with PayPal: 4 payments of $60.00</span>
+            <span id="btn-paypal-label">Complete Recovery with PayPal: 4 payments of $60.00</span>
           </button>
 
-          <p class="text-[10px] text-center text-slate-500">
-            Backed by PayPal Buyer Protection for eligible purchases.
-          </p>
+          <div class="flex items-center justify-between text-[10px] text-slate-500 font-mono px-1">
+            <span>Backed by PayPal Buyer Protection (eligible purchases)</span>
+            <span class="text-slate-400">[PayPal Orders v2 Payload (Local Simulation)]</span>
+          </div>
         </div>
 
         <!-- =============================================================== -->
@@ -533,8 +544,8 @@
         </h2>
         <p class="text-xs text-slate-400">Real-time decline interception, revenue rescue telemetry, and audit log</p>
       </div>
-      <span class="text-[11px] font-mono px-2.5 py-1 rounded bg-white/5 border border-white/10 text-slate-400">
-        Pre-seeded Historical Data (Demo)
+      <span class="text-[11px] font-mono px-2.5 py-1 rounded bg-white/5 border border-white/10 text-slate-300">
+        Demo baseline dataset (32 carts) + Live incremental updates
       </span>
     </div>
 
@@ -710,11 +721,31 @@
       }
     }
 
+    let currentScenario = 'INSUFFICIENT_FUNDS';
+    let currentCartAmount = 240.00;
+    let currentTxId = null;
+    let declineChart = null;
+    let strategyChart = null;
+
+    // Cart Tier Selector
+    function setCartTier(amt) {
+      currentCartAmount = amt;
+      document.getElementById('tier-240').className = amt === 240
+        ? "tier-btn px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-400 border border-emerald-500/40 font-semibold text-[11px]"
+        : "tier-btn px-2 py-0.5 rounded bg-white/5 text-slate-400 border border-white/10 text-[11px] hover:text-slate-200";
+      document.getElementById('tier-1800').className = amt === 1800
+        ? "tier-btn px-2 py-0.5 rounded bg-amber-500/20 text-amber-300 border border-amber-500/40 font-semibold text-[11px]"
+        : "tier-btn px-2 py-0.5 rounded bg-white/5 text-slate-400 border border-white/10 text-[11px] hover:text-slate-200";
+
+      document.getElementById('btn-pay-text').innerText = `Pay $${amt.toLocaleString()}.00 with Card`;
+      resetToHeroDemo(false);
+    }
+
     // Simulation Scenario Chooser
     function setScenario(sc) {
       currentScenario = sc;
       document.querySelectorAll('.sc-btn').forEach(btn => {
-        btn.className = "sc-btn px-2.5 py-1 rounded bg-white/5 text-slate-400 border border-white/10 text-[11px] hover:text-slate-200";
+        btn.className = "sc-btn px-2 py-0.5 rounded bg-white/5 text-slate-400 border border-white/10 text-[11px] hover:text-slate-200";
       });
       const activeBtnMap = {
         'INSUFFICIENT_FUNDS': 'sc-insufficient',
@@ -723,7 +754,7 @@
       };
       const active = document.getElementById(activeBtnMap[sc]);
       if (active) {
-        active.className = "sc-btn px-2.5 py-1 rounded bg-[#0070e0]/20 text-[#0070e0] border border-[#0070e0]/40 font-semibold text-[11px]";
+        active.className = "sc-btn px-2 py-0.5 rounded bg-[#0070e0]/20 text-[#0070e0] border border-[#0070e0]/40 font-semibold text-[11px]";
       }
     }
 
@@ -744,7 +775,7 @@
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
             simulate_error: currentScenario,
-            amount: 240.00,
+            amount: currentCartAmount,
             customer_name: document.getElementById('cust-name').value,
             card_last4: "4022"
           })
@@ -839,16 +870,27 @@
       document.getElementById('total-inference-latency').innerText = `${(data.latency_ms || 4) + 10} ms total`;
     }
 
-    // Render Offer & Model Ranking
+    // Render Offer & Model Ranking with Eligibility Check
     function renderRecoveryOffer(data) {
       const ranking = document.getElementById('ranking-box');
       ranking.classList.remove('hidden');
 
+      const isEligiblePayLater = currentCartAmount >= 30 && currentCartAmount <= 1500;
+
       // Update horizontal bars
       data.ranked_strategies.forEach(s => {
         if (s.strategy === 'PAYPAL_PAY_LATER') {
-          document.getElementById('rank-score-paylater').innerText = s.propensity.toFixed(3);
-          document.getElementById('rank-bar-paylater').style.width = `${s.propensity * 100}%`;
+          if (isEligiblePayLater) {
+            document.getElementById('rank-score-paylater').innerText = s.propensity.toFixed(3);
+            document.getElementById('rank-score-paylater').className = "text-emerald-400 font-bold";
+            document.getElementById('rank-bar-paylater').style.width = `${s.propensity * 100}%`;
+            document.getElementById('rank-bar-paylater').className = "bg-[#0070e0] h-full rounded-full transition-all duration-500";
+          } else {
+            document.getElementById('rank-score-paylater').innerText = "Ineligible (Exceeds $1,500 limit)";
+            document.getElementById('rank-score-paylater').className = "text-slate-500 font-mono text-[10px]";
+            document.getElementById('rank-bar-paylater').style.width = "0%";
+            document.getElementById('rank-bar-paylater').className = "bg-slate-700 h-full rounded-full";
+          }
         } else if (s.strategy === 'PAYPAL_VERIFIED_WALLET') {
           document.getElementById('rank-score-wallet').innerText = s.propensity.toFixed(3);
           document.getElementById('rank-bar-wallet').style.width = `${Math.max(s.propensity * 100, 3)}%`;
@@ -871,7 +913,7 @@
       document.getElementById('btn-paypal-label').innerText = pkg.cta_text;
 
       const timeline = document.getElementById('timeline-container');
-      if (pkg.strategy === 'PAYPAL_PAY_LATER') {
+      if (pkg.strategy === 'PAYPAL_PAY_LATER' && isEligiblePayLater) {
         timeline.classList.remove('hidden');
       } else {
         timeline.classList.add('hidden');
@@ -889,7 +931,7 @@
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
             transaction_id: currentTxId,
-            amount: 240.00
+            amount: currentCartAmount
           })
         });
         const orderData = await ordResp.json();
@@ -900,7 +942,7 @@
           body: JSON.stringify({
             order_id: orderData.id,
             transaction_id: currentTxId,
-            amount: 240.00
+            amount: currentCartAmount
           })
         });
         const capData = await capResp.json();
@@ -913,7 +955,7 @@
         document.getElementById('confirmed-panel').classList.remove('hidden');
 
         document.getElementById('conf-order-id').innerText = orderData.id;
-        document.getElementById('conf-tender').innerText = "PayPal Pay in 4";
+        document.getElementById('conf-tender').innerText = currentCartAmount <= 1500 ? "PayPal Pay in 4" : "PayPal Verified Wallet";
         document.getElementById('conf-latency').innerText = "18 ms";
 
       } catch (err) {
@@ -922,7 +964,7 @@
     }
 
     // One-Click Hero Demo Reset (Key 'D')
-    function resetToHeroDemo() {
+    function resetToHeroDemo(resetAmount = true) {
       document.getElementById('confirmed-panel').classList.add('hidden');
       document.getElementById('recovery-panel').classList.add('hidden');
       document.getElementById('ranking-box').classList.add('hidden');
@@ -932,18 +974,29 @@
       const cardForm = document.getElementById('card-form-box');
       cardForm.style.borderColor = 'rgba(255, 255, 255, 0.10)';
 
+      if (resetAmount) {
+        currentCartAmount = 240.00;
+        document.getElementById('tier-240').className = "tier-btn px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-400 border border-emerald-500/40 font-semibold text-[11px]";
+        document.getElementById('tier-1800').className = "tier-btn px-2 py-0.5 rounded bg-white/5 text-slate-400 border border-white/10 text-[11px] hover:text-slate-200";
+      }
+
       const btnPay = document.getElementById('btn-pay');
       btnPay.className = "w-full mt-2 bg-[#0070e0] hover:bg-[#005bb5] text-white font-semibold py-2.5 px-4 rounded-lg text-xs transition flex items-center justify-center gap-2";
-      document.getElementById('btn-pay-text').innerText = "Pay $240.00 with Card";
+      document.getElementById('btn-pay-text').innerText = `Pay $${currentCartAmount.toLocaleString()}.00 with Card`;
       document.getElementById('btn-pay-icon').className = "fa-solid fa-arrow-right text-[11px]";
       btnPay.disabled = false;
 
       setScenario('INSUFFICIENT_FUNDS');
     }
 
-    // Keyboard shortcut 'D' to reset demo
+    // Guarded keyboard shortcut 'D' to reset demo
     window.addEventListener('keydown', (e) => {
-      if ((e.key === 'd' || e.key === 'D') && document.activeElement.tagName !== 'INPUT') {
+      const activeEl = document.activeElement;
+      const tag = (activeEl && activeEl.tagName) || '';
+      if (tag === 'INPUT' || tag === 'TEXTAREA' || (activeEl && activeEl.isContentEditable)) {
+        return;
+      }
+      if (e.key === 'd' || e.key === 'D') {
         resetToHeroDemo();
       }
     });
@@ -1008,9 +1061,15 @@
         tbody.innerHTML = '';
         data.recent_transactions.forEach(tx => {
           const tr = document.createElement('tr');
-          tr.className = "hover:bg-white/[0.02]";
+          const isJustRescued = tx.id === currentTxId;
+          tr.className = isJustRescued 
+            ? "bg-[#0070e0]/20 border-l-2 border-[#0070e0] font-semibold"
+            : "hover:bg-white/[0.02]";
           tr.innerHTML = `
-            <td class="py-2.5 text-slate-400">${tx.id}</td>
+            <td class="py-2.5 text-slate-400 flex items-center gap-1.5">
+              ${isJustRescued ? '<span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-ping"></span>' : ''}
+              ${tx.id}
+            </td>
             <td class="py-2.5 text-slate-200">${tx.customer}</td>
             <td class="py-2.5 font-semibold text-white num-tabular">$${tx.amount.toFixed(2)}</td>
             <td class="py-2.5 text-amber-400">${tx.decline_code}</td>
