@@ -147,6 +147,35 @@ def capture_paypal_recovery():
         "metrics": METRICS
     })
 
+@app.route("/api/copilot/ask", methods=["POST"])
+def copilot_ask():
+    """Contextual conversational copilot for shoppers during checkout failure."""
+    data = request.json or {}
+    user_query = data.get("query", "").strip().lower()
+    scenario = data.get("scenario", "INSUFFICIENT_FUNDS")
+    amount = float(data.get("amount", 240.00))
+
+    if "fee" in user_query or "interest" in user_query or "cost" in user_query:
+        reply = f"There are zero interest charges and zero hidden fees with PayPal Pay in 4. You simply pay 4 equal installments of ${amount/4:.2f} every two weeks."
+    elif "why" in user_query or "decline" in user_query or "reason" in user_query:
+        if scenario == "INSUFFICIENT_FUNDS":
+            reply = f"Your card issuer reported a spending limit threshold for a single charge of ${amount:.2f}. Switching to PayPal Pay in 4 breaks this into ${amount/4:.2f} portions that easily pass your card's authorization rules."
+        elif scenario == "FRAUD_SUSPECTED":
+            reply = "Your bank's heuristic fraud filter triggered a temporary automated block. Authenticating through your verified PayPal Wallet proves identity without needing to call your bank."
+        else:
+            reply = "Your credit card issuer does not permit cross-border international currency clearance. PayPal automatically clears the foreign exchange conversion for you."
+    elif "safe" in user_query or "protect" in user_query or "security" in user_query:
+        reply = "Yes! All PayPal transactions include PayPal Purchase Protection. Your full payment details remain encrypted and are never shared directly with the merchant."
+    elif "bank" in user_query or "debit" in user_query:
+        reply = "You can link your debit card or direct bank account inside PayPal to complete this order instantly without any credit checks."
+    else:
+        reply = f"I've pre-configured your checkout recovery route. You can complete your order securely with PayPal in 1 click, or split it into 4 payments of ${amount/4:.2f}."
+
+    return jsonify({
+        "reply": reply,
+        "timestamp": time.strftime("%H:%M:%S")
+    })
+
 @app.route("/api/metrics", methods=["GET"])
 def get_metrics():
     return jsonify(METRICS)
