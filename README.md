@@ -7,6 +7,13 @@
 [![PayPal](https://img.shields.io/badge/PayPal-Complete_Payments-003087.svg?logo=paypal&logoColor=white)](https://developer.paypal.com/)
 [![scikit-learn](https://img.shields.io/badge/scikit--learn-ML_Engine-F7931E.svg?logo=scikitlearn&logoColor=white)](https://scikit-learn.org/)
 [![SQLite](https://img.shields.io/badge/SQLite-Real--time_Store-003B57.svg?logo=sqlite&logoColor=white)](https://sqlite.org)
+[![YouTube Demo](https://img.shields.io/badge/YouTube-2--Min_Demo-FF0000.svg?logo=youtube&logoColor=white)](https://youtu.be/A-crVmlQNjU)
+
+---
+
+### 📺 Video Walkthrough (2-Minute Demo)
+[![PayGuard AI Video Demo](https://img.youtube.com/vi/A-crVmlQNjU/maxresdefault.jpg)](https://youtu.be/A-crVmlQNjU)
+> 🔗 **Direct YouTube Link:** [https://youtu.be/A-crVmlQNjU](https://youtu.be/A-crVmlQNjU)
 
 ---
 
@@ -151,4 +158,5 @@ In a live production deployment:
 - **Hackathon:** PayPal AI Hackathon (Devpost)
 - **Author:** Krish Punia ([@kpunia306](https://github.com/kpunia306))
 - **Track:** AI Agents & Intelligent Commerce
+- **Video Demo:** [https://youtu.be/A-crVmlQNjU](https://youtu.be/A-crVmlQNjU)
 - **License:** MIT
