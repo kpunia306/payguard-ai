@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" class="dark">
+<html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -9,134 +9,419 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
 
   <style>
     :root {
-      --bg: #0b0f1a;
-      --surface: rgba(255, 255, 255, 0.05);
-      --surface-elevated: rgba(255, 255, 255, 0.08);
-      --border: rgba(255, 255, 255, 0.10);
-      --border-focus: rgba(0, 112, 224, 0.6);
-      --text: #e8ecf4;
-      --muted: #9aa4b8;
+      --bg: #070b14;
       --brand: #0070e0;
-      --brand-hover: #005bb5;
       --paypal-gold: #ffc439;
       --paypal-gold-hover: #f2ba36;
       --ok: #22c55e;
       --warn: #f59e0b;
       --bad: #ef4444;
-      --radius: 14px;
-      --space: 8px;
     }
+
+    * { box-sizing: border-box; }
 
     body {
-      background-color: var(--bg);
-      color: var(--text);
+      min-height: 100vh;
+      background:
+        radial-gradient(900px 500px at 15% -10%, rgba(0, 112, 224, 0.18), transparent 60%),
+        radial-gradient(700px 400px at 100% 10%, rgba(124, 58, 237, 0.12), transparent 60%),
+        var(--bg);
+      color: #e8ecf4;
       font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      margin: 0;
+      padding: 0;
     }
 
-    .font-mono {
+    .font-mono { font-family: 'JetBrains Mono', monospace; }
+    .num-tabular { font-variant-numeric: tabular-nums; }
+
+    /* Layout Stage */
+    .stage {
+      max-width: 1260px;
+      margin: 0 auto;
+      padding: 24px 20px 40px;
+      display: grid;
+      grid-template-columns: minmax(0, 1.05fr) minmax(0, 0.95fr);
+      gap: 28px;
+      align-items: start;
+    }
+
+    @media (max-width: 1024px) {
+      .stage {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    /* 1. Left Column: Authentic White Store Checkout */
+    .checkout-card {
+      background: #ffffff;
+      color: #0f172a;
+      border-radius: 20px;
+      padding: 28px 30px;
+      box-shadow: 0 30px 80px rgba(0, 0, 0, 0.45);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .checkout-card label {
+      font-size: 13px;
+      font-weight: 500;
+      color: #64748b;
+      margin-bottom: 5px;
+      display: block;
+    }
+
+    .checkout-card input {
+      height: 46px;
+      padding: 0 14px;
+      border-radius: 10px;
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      font-size: 14px;
+      font-weight: 500;
+      color: #0f172a;
+      width: 100%;
+      transition: border-color 0.15s, box-shadow 0.15s;
+    }
+
+    .checkout-card input:focus {
+      outline: none;
+      border-color: #0070e0;
+      box-shadow: 0 0 0 4px rgba(0, 112, 224, 0.15);
+      background: #ffffff;
+    }
+
+    .pay-btn {
+      height: 50px;
+      border-radius: 12px;
+      background: #0f172a;
+      color: #ffffff;
+      font-size: 15px;
+      font-weight: 600;
+      width: 100%;
+      border: none;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      transition: transform 0.15s, box-shadow 0.15s, background-color 0.15s;
+    }
+
+    .pay-btn:hover:not(:disabled) {
+      background: #1e293b;
+      transform: translateY(-1px);
+      box-shadow: 0 8px 20px rgba(15, 23, 42, 0.25);
+    }
+
+    .pay-btn:disabled {
+      opacity: 0.75;
+      cursor: not-allowed;
+    }
+
+    /* 2. Hero Visual: Live Credit Card Graphic */
+    .cc {
+      position: relative;
+      aspect-ratio: 1.586;
+      max-width: 320px;
+      margin: 0 auto 20px;
+      padding: 20px 22px;
+      border-radius: 16px;
+      color: #ffffff;
+      background: linear-gradient(135deg, #1e293b 0%, #0b1220 100%);
+      box-shadow: 0 20px 40px rgba(2, 6, 23, 0.35);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      overflow: hidden;
+      transition: outline 0.2s, box-shadow 0.2s;
+    }
+
+    .cc-chip {
+      width: 38px;
+      height: 28px;
+      border-radius: 6px;
+      background: linear-gradient(135deg, #fbbf24, #d97706);
+      box-shadow: inset 0 1px 2px rgba(255,255,255,0.4);
+    }
+
+    .cc-num {
       font-family: 'JetBrains Mono', monospace;
+      font-size: 18px;
+      font-weight: 500;
+      letter-spacing: 0.12em;
+      margin-top: 30px;
+      color: #f8fafc;
+      text-shadow: 0 1px 2px rgba(0,0,0,0.4);
     }
 
-    .num-tabular {
-      font-variant-numeric: tabular-nums;
+    .cc-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      margin-top: 18px;
+      font-size: 11px;
+      font-weight: 500;
+      letter-spacing: 0.08em;
+      color: #94a3b8;
+      text-transform: uppercase;
     }
 
-    /* Subtle Glass Surfaces - Restricted to 2 primary elements */
-    .glass-surface {
-      background: var(--surface);
-      backdrop-filter: blur(12px);
-      -webkit-backdrop-filter: blur(12px);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
+    .cc-row span:first-child {
+      color: #f1f5f9;
+      font-weight: 600;
     }
 
-    .glass-nav {
-      background: rgba(11, 15, 26, 0.92);
-      backdrop-filter: blur(16px);
-      border-bottom: 1px solid var(--border);
+    .cc-stamp {
+      position: absolute;
+      inset: 0;
+      display: grid;
+      place-items: center;
+      opacity: 0;
+      font-size: 24px;
+      font-weight: 800;
+      letter-spacing: 0.25em;
+      text-transform: uppercase;
+      color: #f59e0b;
+      background: rgba(11, 18, 32, 0.85);
+      backdrop-filter: blur(4px);
+      transition: opacity 0.25s ease-out;
+      pointer-events: none;
     }
 
-    /* Purposeful Motion */
+    .cc.declined {
+      outline: 2px solid #f59e0b;
+      box-shadow: 0 0 25px rgba(245, 158, 11, 0.3);
+      animation: cardShake 0.32s cubic-bezier(.36,.07,.19,.97) both;
+    }
+
+    .cc.declined .cc-stamp {
+      opacity: 1;
+    }
+
     @keyframes cardShake {
       0%, 100% { transform: translateX(0); }
       20%, 60% { transform: translateX(-6px); }
       40%, 80% { transform: translateX(6px); }
     }
-    .shake-anim {
-      animation: cardShake 320ms cubic-bezier(.36,.07,.19,.97) both;
+
+    /* 3. Right Column: Sticky PayGuard AI Live Console */
+    .console {
+      position: sticky;
+      top: 24px;
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border-radius: 20px;
+      padding: 24px;
+      color: #e8ecf4;
+      box-shadow: 0 20px 50px rgba(0,0,0,0.3);
     }
 
-    @keyframes slideDown {
-      from { opacity: 0; transform: translateY(-8px); }
+    .console-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding-bottom: 14px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      font-size: 13px;
+      font-weight: 600;
+    }
+
+    .dot.live {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #22c55e;
+      display: inline-block;
+      margin-right: 8px;
+      box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.6);
+      animation: ping 1.8s infinite;
+    }
+
+    @keyframes ping {
+      70% { box-shadow: 0 0 0 8px rgba(34, 197, 94, 0); }
+      100% { box-shadow: 0 0 0 0 rgba(34, 197, 94, 0); }
+    }
+
+    .tag-monitoring {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 10px;
+      font-weight: 600;
+      padding: 2px 8px;
+      border-radius: 6px;
+      background: rgba(34, 197, 94, 0.12);
+      color: #4ade80;
+      border: 1px solid rgba(34, 197, 94, 0.25);
+    }
+
+    /* 3-Row Pipeline */
+    .pipeline {
+      list-style: none;
+      padding: 0;
+      margin: 16px 0;
+    }
+
+    .pipeline li {
+      display: grid;
+      grid-template-columns: 105px 1fr auto;
+      gap: 12px;
+      align-items: center;
+      padding: 13px 8px;
+      border-radius: 8px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+      font-size: 12px;
+      transition: opacity 0.25s, background-color 0.25s;
+    }
+
+    .pipeline li:last-child {
+      border-bottom: none;
+    }
+
+    .pipeline li[data-state="idle"] {
+      opacity: 0.45;
+    }
+
+    .pipeline li[data-state="running"] {
+      opacity: 1;
+      background: rgba(0, 112, 224, 0.12);
+      animation: pulse 1s infinite;
+    }
+
+    .pipeline li[data-state="done"] {
+      opacity: 1;
+      background: rgba(255, 255, 255, 0.02);
+    }
+
+    .pipeline li[data-state="done"] em {
+      color: #22c55e;
+      font-family: 'JetBrains Mono', monospace;
+      font-style: normal;
+      font-weight: 600;
+      font-size: 11px;
+    }
+
+    .pipeline li b {
+      font-weight: 600;
+      color: #f1f5f9;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .pipeline li span {
+      color: #94a3b8;
+    }
+
+    @keyframes pulse {
+      50% { background: rgba(0, 112, 224, 0.2); }
+    }
+
+    /* Simulation notice */
+    .sim-note {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 10px;
+      color: #64748b;
+      margin-top: 16px;
+      padding-top: 12px;
+      border-top: 1px solid rgba(255, 255, 255, 0.08);
+      line-height: 1.5;
+    }
+
+    /* Floating simulation pill (bottom left) */
+    .demo-pill {
+      position: fixed;
+      left: 16px;
+      bottom: 16px;
+      z-index: 50;
+      padding: 7px 14px;
+      border-radius: 999px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11px;
+      font-weight: 500;
+      background: rgba(15, 23, 42, 0.92);
+      color: #94a3b8;
+      border: 1px solid rgba(255, 255, 255, 0.14);
+      backdrop-filter: blur(10px);
+      box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      transition: all 0.15s;
+    }
+
+    .demo-pill:hover {
+      background: rgba(30, 41, 59, 0.95);
+      color: #f1f5f9;
+      border-color: rgba(255, 255, 255, 0.25);
+    }
+
+    .demo-drawer {
+      position: fixed;
+      left: 16px;
+      bottom: 54px;
+      z-index: 50;
+      background: rgba(15, 23, 42, 0.96);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      backdrop-filter: blur(16px);
+      border-radius: 14px;
+      padding: 14px 16px;
+      box-shadow: 0 20px 40px rgba(0,0,0,0.6);
+      width: 310px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11px;
+    }
+
+    /* In-Place Recovery Transition */
+    .collapse-enter {
+      animation: expandInPlace 0.25s ease-out forwards;
+    }
+
+    @keyframes expandInPlace {
+      from { opacity: 0; transform: translateY(-4px); }
       to { opacity: 1; transform: translateY(0); }
     }
-    .slide-down-anim {
-      animation: slideDown 220ms ease-out forwards;
-    }
-
-    @media (prefers-reduced-motion: reduce) {
-      .shake-anim, .slide-down-anim {
-        animation: none !important;
-        transform: none !important;
-      }
-    }
-
-    /* Custom focused inputs */
-    input:focus {
-      outline: none;
-      border-color: var(--brand);
-      box-shadow: 0 0 0 3px rgba(0, 112, 224, 0.2);
-    }
-
-    /* Scrollbars */
-    ::-webkit-scrollbar { width: 5px; height: 5px; }
-    ::-webkit-scrollbar-track { background: var(--bg); }
-    ::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.15); border-radius: 3px; }
   </style>
 </head>
-<body class="min-h-screen antialiased selection:bg-[#0070e0] selection:text-white">
+<body class="selection:bg-[#0070e0] selection:text-white">
 
   <!-- ========================================================================= -->
-  <!-- TOP NAVIGATION BAR -->
+  <!-- TOP COMPACT HEADER -->
   <!-- ========================================================================= -->
-  <header class="glass-nav sticky top-0 z-40">
-    <div class="max-w-6xl mx-auto px-4 sm:px-6 py-3 flex items-center justify-between">
+  <header class="border-b border-white/[0.08] bg-black/30 backdrop-blur-md sticky top-0 z-40">
+    <div class="max-w-6xl mx-auto px-4 py-2.5 flex items-center justify-between">
       
-      <!-- Brand & Badges -->
-      <div class="flex items-center gap-3">
-        <div class="w-8 h-8 rounded-lg bg-[#0070e0] flex items-center justify-center text-white font-bold text-sm shadow-md">
+      <!-- Brand -->
+      <div class="flex items-center gap-2.5">
+        <div class="w-6 h-6 rounded-md bg-[#0070e0] flex items-center justify-center text-white text-xs font-bold">
           <i class="fa-solid fa-shield-halved"></i>
         </div>
-        <div>
-          <div class="flex items-center gap-2">
-            <span class="font-extrabold text-base tracking-tight text-white">PayGuard AI</span>
-            <span class="text-[10px] font-mono font-medium px-2 py-0.5 rounded bg-white/10 text-slate-300 border border-white/10">Prototype</span>
-          </div>
-          <p class="text-[11px] text-slate-400">Guided Payment Recovery · PayPal AI Hackathon</p>
+        <div class="flex items-center gap-2">
+          <span class="font-bold text-sm tracking-tight text-white">PayGuard AI</span>
+          <span class="text-[10px] font-mono px-1.5 py-0.5 rounded bg-white/10 text-slate-300">Hackathon demo</span>
         </div>
       </div>
 
-      <!-- Navigation Tabs -->
-      <nav class="hidden md:flex items-center bg-white/[0.04] p-1 rounded-xl border border-white/10 text-xs">
-        <button onclick="switchTab('checkout')" id="nav-checkout" class="nav-btn px-4 py-1.5 rounded-lg font-semibold text-white bg-[#0070e0] shadow-sm transition">
-          <i class="fa-solid fa-cart-shopping mr-1.5"></i> Shopper Checkout
+      <!-- Compact Segmented Tab Switcher -->
+      <nav class="flex items-center bg-white/[0.06] p-0.5 rounded-lg border border-white/10 text-xs">
+        <button onclick="switchTab('checkout')" id="nav-checkout" class="px-3.5 py-1.5 rounded-md font-semibold text-white bg-[#0070e0] shadow-sm transition">
+          Store Checkout
         </button>
-        <button onclick="switchTab('warroom')" id="nav-warroom" class="nav-btn px-4 py-1.5 rounded-lg font-medium text-slate-400 hover:text-slate-200 transition">
-          <i class="fa-solid fa-chart-line mr-1.5"></i> Merchant War Room
+        <button onclick="switchTab('warroom')" id="nav-warroom" class="px-3.5 py-1.5 rounded-md font-medium text-slate-400 hover:text-slate-200 transition">
+          Merchant War Room
         </button>
       </nav>
 
-      <!-- Video Take Shortcut Button & Audio Toggle -->
+      <!-- Action Tools -->
       <div class="flex items-center gap-2">
-        <button onclick="resetToHeroDemo()" title="Reset to standard $240 / Code 51 scenario for video recording" class="px-2.5 py-1.5 rounded-lg bg-white/10 hover:bg-white/15 border border-white/10 text-[11px] font-mono text-slate-200 transition flex items-center gap-1.5">
-          <i class="fa-solid fa-rotate-left text-amber-400"></i>
-          <span>Reset Demo (Key 'D')</span>
+        <button onclick="resetToHeroDemo()" title="Reset to initial clean state (Key 'D')" class="text-xs px-2.5 py-1 rounded bg-white/5 hover:bg-white/10 border border-white/10 text-slate-300 transition flex items-center gap-1.5 font-mono">
+          <i class="fa-solid fa-rotate-left text-amber-400 text-[10px]"></i>
+          <span>Reset (D)</span>
         </button>
-        <button onclick="toggleAudio()" id="btn-audio" title="Audio feedback (muted by default for clean video takes)" class="w-8 h-8 rounded-lg bg-white/5 hover:bg-white/10 border border-white/10 text-slate-400 hover:text-slate-200 text-xs transition flex items-center justify-center">
+        <button onclick="toggleAudio()" id="btn-audio" title="Audio feedback toggle" class="w-7 h-7 rounded bg-white/5 hover:bg-white/10 border border-white/10 text-slate-400 hover:text-slate-200 text-xs transition flex items-center justify-center">
           <i id="audio-icon" class="fa-solid fa-volume-xmark"></i>
         </button>
       </div>
@@ -145,397 +430,298 @@
   </header>
 
   <!-- ========================================================================= -->
-  <!-- SIMULATION CONTROLS DRAWER (Clearly Labeled as Test DevTools) -->
+  <!-- TAB 1: SPLIT SCREEN CHECKOUT & PAYGUARD LIVE CONSOLE -->
   <!-- ========================================================================= -->
-  <aside class="bg-black/40 border-b border-white/10 px-4 py-2 font-mono text-xs">
-    <div class="max-w-6xl mx-auto flex flex-wrap items-center justify-between gap-3">
+  <main id="tab-checkout-view" class="stage">
+    
+    <!-- --------------------------------------------------------------------- -->
+    <!-- LEFT COLUMN: AUTHENTIC WHITE STORE CHECKOUT -->
+    <!-- --------------------------------------------------------------------- -->
+    <div class="space-y-4">
       
-      <!-- Scenario Selection -->
-      <div class="flex items-center gap-2">
-        <span class="w-2 h-2 rounded-full bg-amber-400"></span>
-        <span class="text-slate-300 font-semibold uppercase text-[11px] tracking-wider">Decline Ingestion:</span>
-        <button onclick="setScenario('INSUFFICIENT_FUNDS')" id="sc-insufficient" class="sc-btn px-2 py-0.5 rounded bg-[#0070e0]/20 text-[#0070e0] border border-[#0070e0]/40 font-semibold text-[11px]">
-          Code 51 (NSF)
-        </button>
-        <button onclick="setScenario('FRAUD_SUSPECTED')" id="sc-fraud" class="sc-btn px-2 py-0.5 rounded bg-white/5 text-slate-400 border border-white/10 text-[11px] hover:text-slate-200">
-          Code 59 (Fraud)
-        </button>
-        <button onclick="setScenario('CURRENCY_MISMATCH')" id="sc-currency" class="sc-btn px-2 py-0.5 rounded bg-white/5 text-slate-400 border border-white/10 text-[11px] hover:text-slate-200">
-          Code 82 (FX)
-        </button>
-      </div>
-
-      <!-- Eligibility Tier Test Toggle -->
-      <div class="flex items-center gap-2 border-l border-white/10 pl-3">
-        <span class="text-slate-400 text-[11px] uppercase tracking-wider">Cart Value:</span>
-        <button onclick="setCartTier(240)" id="tier-240" class="tier-btn px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-400 border border-emerald-500/40 font-semibold text-[11px]">
-          $240 (Pay in 4 Eligible)
-        </button>
-        <button onclick="setCartTier(1800)" id="tier-1800" class="tier-btn px-2 py-0.5 rounded bg-white/5 text-slate-400 border border-white/10 text-[11px] hover:text-slate-200">
-          $1,800 (Ineligible &gt; $1.5k)
-        </button>
-      </div>
-
-    </div>
-  </aside>
-
-  <!-- ========================================================================= -->
-  <!-- TAB 1: SHOPPER CHECKOUT (THE HERO DEMO) -->
-  <!-- ========================================================================= -->
-  <main id="tab-checkout-view" class="max-w-6xl mx-auto px-4 sm:px-6 py-8">
-    <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
-      
-      <!-- Left Column: Cart & Order Breakdown (5 Cols) -->
-      <div class="lg:col-span-5 space-y-4">
+      <!-- Store Checkout Card -->
+      <div class="checkout-card">
         
-        <div class="glass-surface p-5">
-          <div class="flex items-center justify-between pb-3 border-b border-white/10 mb-3 text-xs">
-            <span class="font-semibold text-slate-300 uppercase tracking-wider font-mono">Order Summary</span>
-            <span class="text-slate-400">DevTools Studio Store</span>
+        <!-- Storefront Header & Order Summary -->
+        <div class="flex items-center justify-between pb-3.5 border-b border-slate-100 mb-4">
+          <div>
+            <span class="text-xs font-semibold text-slate-400 uppercase tracking-wider block">DevTools Studio Store</span>
+            <h2 class="text-base font-bold text-slate-900 mt-0.5">Express Card Checkout</h2>
           </div>
-
-          <div class="space-y-3">
-            <div class="flex items-center justify-between text-xs">
-              <div class="flex items-center gap-2.5">
-                <div class="w-9 h-9 rounded-lg bg-white/5 border border-white/10 flex items-center justify-center text-slate-300">
-                  <i class="fa-solid fa-headphones text-sm"></i>
-                </div>
-                <div>
-                  <h4 class="font-medium text-slate-200">ANC Pro Studio Headphones</h4>
-                  <p class="text-[11px] text-slate-400">Space Grey · Spatial Audio</p>
-                </div>
-              </div>
-              <span class="font-mono num-tabular font-semibold text-slate-200">$180.00</span>
-            </div>
-
-            <div class="flex items-center justify-between text-xs">
-              <div class="flex items-center gap-2.5">
-                <div class="w-9 h-9 rounded-lg bg-white/5 border border-white/10 flex items-center justify-center text-slate-300">
-                  <i class="fa-solid fa-key text-sm"></i>
-                </div>
-                <div>
-                  <h4 class="font-medium text-slate-200">Hardware Security FIDO2 Key</h4>
-                  <p class="text-[11px] text-slate-400">USB-C / NFC Authenticator</p>
-                </div>
-              </div>
-              <span class="font-mono num-tabular font-semibold text-slate-200">$60.00</span>
-            </div>
-          </div>
-
-          <div class="mt-4 pt-3 border-t border-white/10 space-y-1.5 text-xs">
-            <div class="flex justify-between text-slate-400">
-              <span>Subtotal:</span>
-              <span class="font-mono num-tabular">$240.00</span>
-            </div>
-            <div class="flex justify-between text-slate-400">
-              <span>Shipping:</span>
-              <span class="text-emerald-400 font-medium">Free</span>
-            </div>
-            <div class="flex justify-between items-baseline pt-2 border-t border-white/10">
-              <span class="font-bold text-slate-200 text-sm">Total Due Today:</span>
-              <span id="summary-total-amt" class="font-mono num-tabular text-xl font-bold text-white">$240.00 <span class="text-xs font-normal text-slate-400">USD</span></span>
-            </div>
+          <div class="text-right">
+            <span class="text-xs text-slate-400 block">Total Due</span>
+            <span id="summary-total-amt" class="text-xl font-bold font-mono num-tabular text-slate-900">$240.00</span>
           </div>
         </div>
 
-        <!-- Honest Architecture Note -->
-        <div class="p-3.5 rounded-xl bg-white/[0.02] border border-white/5 text-[11px] text-slate-400 leading-relaxed font-mono">
-          <div class="flex items-center gap-1.5 text-slate-300 font-semibold mb-1">
-            <i class="fa-solid fa-circle-info text-[#0070e0]"></i> Architecture Transparency:
+        <!-- Order Items Bar -->
+        <div class="p-3 rounded-xl bg-slate-50 border border-slate-100 mb-5 flex items-center justify-between text-xs text-slate-600">
+          <div class="flex items-center gap-2">
+            <i class="fa-solid fa-headphones text-slate-400"></i>
+            <span class="font-medium text-slate-800">ANC Pro Studio Headphones</span>
+            <span class="text-slate-400">+ Hardware FIDO2 Key</span>
           </div>
-          Decline triggers inject ISO 8583 codes. Downstream payload adheres to official PayPal Orders v2 REST schema.
+          <span class="font-semibold text-slate-800 font-mono">2 items</span>
         </div>
 
-      </div>
-
-      <!-- Right Column: Checkout Form ➔ Stepper ➔ Recovery Offer (7 Cols) -->
-      <div class="lg:col-span-7 space-y-5">
-        
-        <!-- =============================================================== -->
-        <!-- 1. CARD FORM (HERO ELEMENT) -->
-        <!-- =============================================================== -->
-        <div id="card-form-box" class="glass-surface p-6 transition-all duration-200">
-          <div class="flex items-center justify-between mb-4">
-            <h3 class="text-xs font-mono font-bold uppercase text-slate-300 tracking-wider">
-              Payment Method: Card
-            </h3>
-            <div class="flex items-center gap-1.5 text-slate-400 text-xs">
-              <i class="fa-brands fa-cc-visa text-base"></i>
-              <i class="fa-brands fa-cc-mastercard text-base"></i>
-              <i class="fa-brands fa-cc-amex text-base"></i>
-            </div>
+        <!-- HERO ELEMENT: LIVE CREDIT CARD PREVIEW -->
+        <div class="cc" id="cc-preview">
+          <div class="cc-chip"></div>
+          <div class="cc-num" id="ccNum">4111 •••• •••• 1894</div>
+          <div class="cc-row">
+            <span id="ccName">KRISH PUNIA</span>
+            <span id="ccExp">08/28</span>
           </div>
+          <div class="cc-stamp" id="ccStamp">Declined</div>
+        </div>
 
-          <div class="space-y-3.5">
+        <!-- CARD FORM (Collapses in-place on decline!) -->
+        <div id="card-form-wrapper">
+          <form id="card-payment-form" onsubmit="event.preventDefault(); triggerCardDecline();" class="space-y-3.5">
             <div>
-              <label class="block text-xs font-medium text-slate-300 mb-1">Cardholder Name</label>
-              <input type="text" id="cust-name" value="Krish Punia" class="w-full bg-white/[0.04] border border-white/10 rounded-lg px-3 py-2 text-xs text-slate-200">
+              <label for="cust-name">Cardholder Name</label>
+              <input type="text" id="cust-name" value="Krish Punia" oninput="updateCardPreview()">
             </div>
 
             <div>
-              <label class="block text-xs font-medium text-slate-300 mb-1">Card Number</label>
+              <label for="card-num">Card Number</label>
               <div class="relative">
-                <input type="text" id="card-num" value="4111 8290 4022 1894" class="w-full bg-white/[0.04] border border-white/10 rounded-lg pl-3 pr-10 py-2 text-xs font-mono num-tabular text-slate-200">
-                <i class="fa-brands fa-cc-visa absolute right-3 top-2.5 text-slate-400 text-sm"></i>
+                <input type="text" id="card-num" value="4111 8290 4022 1894" class="font-mono num-tabular pr-10" oninput="updateCardPreview()">
+                <i class="fa-brands fa-cc-visa absolute right-3.5 top-3.5 text-slate-400 text-lg"></i>
               </div>
             </div>
 
             <div class="grid grid-cols-2 gap-3">
               <div>
-                <label class="block text-xs font-medium text-slate-300 mb-1">Expiration</label>
-                <input type="text" value="08/28" class="w-full bg-white/[0.04] border border-white/10 rounded-lg px-3 py-2 text-xs font-mono num-tabular text-slate-200">
+                <label for="card-exp">Expiration</label>
+                <input type="text" id="card-exp" value="08/28" class="font-mono num-tabular" oninput="updateCardPreview()">
               </div>
               <div>
-                <label class="block text-xs font-medium text-slate-300 mb-1">CVC</label>
-                <input type="text" value="842" class="w-full bg-white/[0.04] border border-white/10 rounded-lg px-3 py-2 text-xs font-mono num-tabular text-slate-200">
+                <label for="card-cvc">CVC</label>
+                <input type="text" id="card-cvc" value="842" class="font-mono num-tabular">
               </div>
             </div>
 
-            <!-- Submit Button -->
-            <button id="btn-pay" onclick="triggerCardDecline()" class="w-full mt-2 bg-[#0070e0] hover:bg-[#005bb5] text-white font-semibold py-2.5 px-4 rounded-lg text-xs transition flex items-center justify-center gap-2">
-              <span id="btn-pay-text">Pay $240.00 with Card</span>
-              <i id="btn-pay-icon" class="fa-solid fa-arrow-right text-[11px]"></i>
+            <!-- Dark Pay Button (Keeps blue & gold for PayPal!) -->
+            <button type="submit" id="btn-pay" class="pay-btn mt-3">
+              <span id="btn-pay-text">Pay $240.00</span>
+              <i id="btn-pay-icon" class="fa-solid fa-arrow-right text-xs"></i>
             </button>
-          </div>
+          </form>
+        </div>
 
-          <!-- Inline Decline Message (Shows immediately on shake) -->
-          <div id="inline-decline-msg" class="hidden mt-3 p-3 rounded-lg bg-amber-500/10 border border-amber-500/30 text-amber-300 text-xs flex items-start gap-2.5 slide-down-anim" aria-live="polite">
-            <i class="fa-solid fa-circle-exclamation mt-0.5 text-amber-400"></i>
+        <!-- COLLAPSED ONE-LINE DECLINE STATUS (Shown on decline) -->
+        <div id="collapsed-decline-row" class="hidden p-3.5 rounded-xl bg-amber-50 border border-amber-200 flex items-center justify-between text-xs text-slate-800 collapse-enter">
+          <div class="flex items-center gap-2.5">
+            <i class="fa-solid fa-circle-exclamation text-amber-500 text-sm"></i>
             <div>
-              <span class="font-semibold block" id="decline-title">Your bank declined this card (insufficient funds)</span>
-              <span class="text-[11px] text-amber-400/80 font-mono" id="decline-code-sub">ISO 8583 · Response Code 51 · Liquidity Limit</span>
+              <span class="font-semibold text-slate-900">Visa ending in 1894</span>
+              <span class="text-slate-500 ml-1">· Declined by issuing bank</span>
             </div>
           </div>
+          <span class="font-mono text-[11px] font-semibold px-2 py-0.5 rounded bg-amber-200/60 text-amber-900 border border-amber-300">
+            Code 51 (NSF)
+          </span>
         </div>
 
-        <!-- =============================================================== -->
-        <!-- 2. AGENT STEPPER (PIPELINE, NOT A WALL OF TEXT) -->
-        <!-- =============================================================== -->
-        <div id="stepper-box" class="hidden glass-surface p-4 border border-white/10 space-y-2 slide-down-anim" aria-live="polite">
-          <div class="flex items-center justify-between text-xs pb-2 border-b border-white/10">
-            <span class="font-mono font-semibold text-slate-300 uppercase tracking-wider flex items-center gap-2">
-              <i class="fa-solid fa-diagram-project text-[#0070e0]"></i> Diagnostic Pipeline
-            </span>
-            <span id="total-inference-latency" class="font-mono text-[11px] text-slate-400">14 ms total</span>
-          </div>
-
-          <!-- Step 1: Sentinel -->
-          <div id="step-sentinel" class="p-2.5 rounded-lg bg-white/[0.02] border border-white/5 flex items-center justify-between text-xs">
-            <div class="flex items-center gap-2.5">
-              <span id="icon-sentinel" class="w-5 h-5 rounded-full bg-slate-800 text-slate-400 flex items-center justify-center text-[10px]">
-                <i class="fa-solid fa-ellipsis"></i>
-              </span>
-              <div>
-                <span class="font-semibold text-slate-200">Sentinel Agent</span>
-                <span class="text-[11px] text-slate-400 ml-1.5 font-mono" id="desc-sentinel">Waiting...</span>
-              </div>
-            </div>
-            <span class="font-mono text-[10px] text-slate-500" id="lat-sentinel">--</span>
-          </div>
-
-          <!-- Step 2: Diagnostician -->
-          <div id="step-diagnostician" class="p-2.5 rounded-lg bg-white/[0.02] border border-white/5 flex items-center justify-between text-xs">
-            <div class="flex items-center gap-2.5">
-              <span id="icon-diagnostician" class="w-5 h-5 rounded-full bg-slate-800 text-slate-400 flex items-center justify-center text-[10px]">
-                <i class="fa-solid fa-ellipsis"></i>
-              </span>
-              <div>
-                <span class="font-semibold text-slate-200">Diagnostician Agent</span>
-                <span class="text-[11px] text-slate-400 ml-1.5 font-mono" id="desc-diagnostician">Waiting...</span>
-              </div>
-            </div>
-            <span class="font-mono text-[10px] text-slate-500" id="lat-diagnostician">--</span>
-          </div>
-
-          <!-- Step 3: Healer -->
-          <div id="step-healer" class="p-2.5 rounded-lg bg-white/[0.02] border border-white/5 flex items-center justify-between text-xs">
-            <div class="flex items-center gap-2.5">
-              <span id="icon-healer" class="w-5 h-5 rounded-full bg-slate-800 text-slate-400 flex items-center justify-center text-[10px]">
-                <i class="fa-solid fa-ellipsis"></i>
-              </span>
-              <div>
-                <span class="font-semibold text-slate-200">Healer Agent</span>
-                <span class="text-[11px] text-slate-400 ml-1.5 font-mono" id="desc-healer">Waiting...</span>
-              </div>
-            </div>
-            <span class="font-mono text-[10px] text-slate-500" id="lat-healer">--</span>
-          </div>
-
-          <!-- Trace toggle -->
-          <div class="pt-1 text-right">
-            <button onclick="toggleTraceDetails()" class="text-[10px] font-mono text-slate-400 hover:text-slate-200 underline">
-              <span id="trace-toggle-label">View Raw Feature Vector</span>
-            </button>
-            <div id="raw-trace-box" class="hidden mt-2 p-2.5 bg-black/60 rounded text-left font-mono text-[10px] text-slate-400 space-y-1">
-              <div>Features: [amount: 0.24, is_liq: 1.0, is_fraud: 0.0, is_fx: 0.0, is_timeout: 0.0, velocity: 0.2]</div>
-              <div>Model: LogisticRegression (max_iter=300) · Classes: 4</div>
-            </div>
-          </div>
-        </div>
-
-        <!-- =============================================================== -->
-        <!-- 3. MODEL RANKING HORIZONTAL BARS (HONEST ML RANKING) -->
-        <!-- =============================================================== -->
-        <div id="ranking-box" class="hidden glass-surface p-4 border border-white/10 space-y-2.5 slide-down-anim">
-          <div class="flex items-center justify-between text-xs pb-1">
-            <span class="font-mono font-semibold text-slate-300 uppercase tracking-wider text-[11px]">
-              Tender Ranking (Model Score)
-            </span>
-            <span class="text-[10px] font-mono text-slate-400">Scikit-Learn Classifier</span>
-          </div>
-
-          <!-- Bar 1: Pay Later -->
-          <div class="space-y-1">
-            <div class="flex justify-between text-[11px] font-mono">
-              <span class="text-slate-200 font-semibold flex items-center gap-1.5">
-                <i class="fa-solid fa-check text-emerald-400 text-[10px]"></i> PayPal Pay in 4 (Eligible $30–$1,500)
-              </span>
-              <span class="text-emerald-400 font-bold" id="rank-score-paylater">0.967</span>
-            </div>
-            <div class="w-full bg-white/5 h-2 rounded-full overflow-hidden">
-              <div id="rank-bar-paylater" class="bg-[#0070e0] h-full rounded-full transition-all duration-500" style="width: 96.7%"></div>
-            </div>
-          </div>
-
-          <!-- Bar 2: Verified Wallet -->
-          <div class="space-y-1">
-            <div class="flex justify-between text-[11px] font-mono text-slate-400">
-              <span>PayPal Verified Wallet</span>
-              <span id="rank-score-wallet">0.012</span>
-            </div>
-            <div class="w-full bg-white/5 h-2 rounded-full overflow-hidden">
-              <div id="rank-bar-wallet" class="bg-slate-600 h-full rounded-full transition-all duration-500" style="width: 1.2%"></div>
-            </div>
-          </div>
-
-          <!-- Bar 3: Dynamic FX -->
-          <div class="space-y-1">
-            <div class="flex justify-between text-[11px] font-mono text-slate-400">
-              <span>PayPal Dynamic FX</span>
-              <span id="rank-score-fx">0.011</span>
-            </div>
-            <div class="w-full bg-white/5 h-2 rounded-full overflow-hidden">
-              <div id="rank-bar-fx" class="bg-slate-600 h-full rounded-full transition-all duration-500" style="width: 1.1%"></div>
-            </div>
-          </div>
-
-          <!-- Bar 4: Fastlane -->
-          <div class="space-y-1">
-            <div class="flex justify-between text-[11px] font-mono text-slate-400">
-              <span>PayPal Fastlane</span>
-              <span id="rank-score-fastlane">0.010</span>
-            </div>
-            <div class="w-full bg-white/5 h-2 rounded-full overflow-hidden">
-              <div id="rank-bar-fastlane" class="bg-slate-600 h-full rounded-full transition-all duration-500" style="width: 1.0%"></div>
-            </div>
-          </div>
-        </div>
-
-        <!-- =============================================================== -->
-        <!-- 4. RECOVERY PANEL & PAY IN 4 TIMELINE (THE SELLING SHOT) -->
-        <!-- =============================================================== -->
-        <div id="recovery-panel" class="hidden glass-surface p-6 border-2 border-[#ffc439]/80 shadow-xl space-y-4 slide-down-anim">
+        <!-- IN-PLACE RECOVERY OFFER (Expands in same spot without pushing layout!) -->
+        <div id="recovery-in-place" class="hidden mt-4 p-5 rounded-xl bg-slate-50 border-2 border-[#ffc439] space-y-4 collapse-enter">
           
-          <div class="flex items-center justify-between border-b border-white/10 pb-3">
-            <span class="inline-flex items-center gap-1.5 text-[11px] font-mono uppercase px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-400 border border-emerald-500/30 font-semibold">
-              <i class="fa-solid fa-wand-magic-sparkles"></i> Alternative Tender Ready
+          <div class="flex items-center justify-between border-b border-slate-200 pb-3">
+            <span class="inline-flex items-center gap-1.5 text-xs font-semibold px-2.5 py-0.5 rounded bg-emerald-100 text-emerald-800">
+              <i class="fa-solid fa-wand-magic-sparkles text-[10px]"></i> Alternative Tender Recommended
             </span>
-            <span class="text-[10px] font-mono text-slate-400">PayPal Orders v2 Payload (Local)</span>
+            <span class="text-[11px] font-mono text-slate-500">PayPal Complete Payments</span>
           </div>
 
-          <!-- Offer Headline -->
           <div>
-            <h3 id="rec-headline" class="text-base font-bold text-white">
+            <h3 class="text-base font-bold text-slate-900" id="rec-headline">
               Split into 4 payments of $60.00 with PayPal
             </h3>
-            <p id="rec-subheadline" class="text-xs text-slate-300 mt-1">
-              Your bank declined the single lump-sum charge. You can complete this purchase with 4 interest-free installments.
+            <p class="text-xs text-slate-600 mt-1" id="rec-subheadline">
+              Your bank declined the single lump-sum charge. Complete your purchase with 4 interest-free installments.
             </p>
           </div>
 
-          <!-- THE TIMELINE SHOT -->
-          <div id="timeline-container" class="bg-black/30 p-4 rounded-xl border border-white/10 space-y-3">
+          <!-- THE TIMELINE SHOT (Pure clean UI) -->
+          <div id="timeline-box" class="bg-white p-3.5 rounded-xl border border-slate-200 space-y-2.5 shadow-sm">
             <div class="grid grid-cols-4 gap-2 text-center text-xs font-mono">
-              <div class="space-y-1">
-                <span class="text-[10px] text-emerald-400 block font-semibold uppercase">Today</span>
-                <span class="text-sm font-bold text-white num-tabular">$60.00</span>
-                <span class="w-2 h-2 rounded-full bg-emerald-400 mx-auto block mt-1"></span>
+              <div>
+                <span class="text-[10px] text-emerald-700 block font-bold uppercase">Today</span>
+                <span class="text-sm font-bold text-slate-900 num-tabular">$60.00</span>
+                <span class="w-2 h-2 rounded-full bg-emerald-500 mx-auto block mt-1"></span>
               </div>
-              <div class="space-y-1 text-slate-400">
-                <span class="text-[10px] text-slate-500 block uppercase">Day 14</span>
-                <span class="text-sm font-semibold num-tabular">$60.00</span>
-                <span class="w-2 h-2 rounded-full bg-slate-600 mx-auto block mt-1"></span>
+              <div class="text-slate-500">
+                <span class="text-[10px] text-slate-400 block uppercase">Day 14</span>
+                <span class="text-sm font-medium num-tabular">$60.00</span>
+                <span class="w-2 h-2 rounded-full bg-slate-300 mx-auto block mt-1"></span>
               </div>
-              <div class="space-y-1 text-slate-400">
-                <span class="text-[10px] text-slate-500 block uppercase">Day 28</span>
-                <span class="text-sm font-semibold num-tabular">$60.00</span>
-                <span class="w-2 h-2 rounded-full bg-slate-600 mx-auto block mt-1"></span>
+              <div class="text-slate-500">
+                <span class="text-[10px] text-slate-400 block uppercase">Day 28</span>
+                <span class="text-sm font-medium num-tabular">$60.00</span>
+                <span class="w-2 h-2 rounded-full bg-slate-300 mx-auto block mt-1"></span>
               </div>
-              <div class="space-y-1 text-slate-400">
-                <span class="text-[10px] text-slate-500 block uppercase">Day 42</span>
-                <span class="text-sm font-semibold num-tabular">$60.00</span>
-                <span class="w-2 h-2 rounded-full bg-slate-600 mx-auto block mt-1"></span>
+              <div class="text-slate-500">
+                <span class="text-[10px] text-slate-400 block uppercase">Day 42</span>
+                <span class="text-sm font-medium num-tabular">$60.00</span>
+                <span class="w-2 h-2 rounded-full bg-slate-300 mx-auto block mt-1"></span>
               </div>
             </div>
 
-            <div class="text-center pt-2 border-t border-white/5 text-[11px] text-slate-400 font-mono">
-              <span class="text-emerald-400 font-semibold">0% Interest</span> · No Late Fees · Short-term Installment (Eligible $30–$1,500)
+            <div class="text-center pt-2 border-t border-slate-100 text-[11px] text-slate-500">
+              <span class="text-emerald-700 font-semibold">0% Interest</span> · No Late Fees · Short-term Installment (Eligible $30–$1,500)
             </div>
           </div>
 
-          <!-- PayPal Recovery CTA Button -->
-          <button onclick="capturePayPalRescue()" id="btn-paypal-capture" class="w-full bg-[#ffc439] hover:bg-[#f2ba36] text-slate-950 font-bold py-3 px-4 rounded-xl text-xs transition flex items-center justify-center gap-2 shadow-md">
-            <i class="fa-brands fa-paypal text-base text-[#003087]"></i>
+          <!-- GOLD PAYPAL RECOVERY CTA -->
+          <button onclick="capturePayPalRescue()" id="btn-paypal-capture" class="w-full bg-[#ffc439] hover:bg-[#f2ba36] text-slate-950 font-bold py-3.5 px-4 rounded-xl text-xs transition flex items-center justify-center gap-2 shadow-md">
+            <i class="fa-brands fa-paypal text-lg text-[#003087]"></i>
             <span id="btn-paypal-label">Complete Recovery with PayPal: 4 payments of $60.00</span>
           </button>
 
-          <div class="flex items-center justify-between text-[10px] text-slate-500 font-mono px-1">
+          <div class="flex items-center justify-between text-[10px] text-slate-500 font-mono pt-1">
             <span>Backed by PayPal Buyer Protection (eligible purchases)</span>
-            <span class="text-slate-400">[Modeled on PayPal Orders v2 schema (Local)]</span>
+            <span class="text-slate-400">[Modeled on PayPal Orders v2]</span>
           </div>
+
         </div>
 
-        <!-- =============================================================== -->
-        <!-- 5. RESCUE CONFIRMATION CARD (HERO FINALE) -->
-        <!-- =============================================================== -->
-        <div id="confirmed-panel" class="hidden glass-surface p-6 border-2 border-emerald-500/70 text-center space-y-4 slide-down-anim">
-          <div class="w-12 h-12 rounded-full bg-emerald-500/20 text-emerald-400 mx-auto flex items-center justify-center text-xl border border-emerald-500/30">
+        <!-- CAPTURE CONFIRMED STATE -->
+        <div id="confirmed-in-place" class="hidden mt-4 p-5 rounded-xl bg-emerald-50 border-2 border-emerald-400 text-center space-y-3 collapse-enter">
+          <div class="w-10 h-10 rounded-full bg-emerald-500/20 text-emerald-600 mx-auto flex items-center justify-center text-lg">
             <i class="fa-solid fa-check"></i>
           </div>
           <div>
-            <h3 class="text-lg font-bold text-white">Cart Rescued & Order Captured</h3>
-            <p class="text-xs text-slate-300 mt-0.5">Rescued via PayPal Complete Payments with zero re-typing.</p>
+            <h3 class="text-base font-bold text-slate-900">Cart Rescued & Order Captured</h3>
+            <p class="text-xs text-slate-600 mt-0.5">Payment captured cleanly via PayPal Complete Payments.</p>
           </div>
-
-          <div class="bg-black/30 p-3.5 rounded-lg border border-white/10 font-mono text-xs text-left space-y-1.5">
+          <div class="bg-white p-3 rounded-lg border border-emerald-200 font-mono text-xs text-left space-y-1">
             <div class="flex justify-between">
-              <span class="text-slate-400">Order ID:</span>
-              <span class="text-slate-200" id="conf-order-id">PP-ORD-88219</span>
+              <span class="text-slate-500">Order ID:</span>
+              <span class="text-slate-800 font-semibold" id="conf-order-id">PP-ORD-88219</span>
             </div>
             <div class="flex justify-between">
-              <span class="text-slate-400">Tender:</span>
-              <span class="text-emerald-400" id="conf-tender">PayPal Pay in 4</span>
-            </div>
-            <div class="flex justify-between">
-              <span class="text-slate-400">Resolution Latency:</span>
-              <span class="text-[#0070e0]" id="conf-latency">18 ms</span>
+              <span class="text-slate-500">Tender:</span>
+              <span class="text-emerald-700 font-bold" id="conf-tender">PayPal Pay in 4</span>
             </div>
           </div>
-
-          <button onclick="resetToHeroDemo()" class="text-xs text-slate-400 hover:text-white underline">
-            Run Another Demo Take
-          </button>
         </div>
 
       </div>
 
     </div>
+
+    <!-- --------------------------------------------------------------------- -->
+    <!-- RIGHT COLUMN: STICKY PAYGUARD AI LIVE CONSOLE -->
+    <!-- --------------------------------------------------------------------- -->
+    <aside class="console">
+      
+      <!-- Console Head with Live Status -->
+      <div class="console-head">
+        <div class="flex items-center">
+          <span class="dot live"></span>
+          <span>PayGuard Live Console</span>
+        </div>
+        <span class="tag-monitoring" id="console-tag">Monitoring</span>
+      </div>
+
+      <!-- 3-Row Pipeline (Sentinel -> Diagnostician -> Healer) -->
+      <ol class="pipeline">
+        <li id="pipe-sentinel" data-state="idle">
+          <b><i class="fa-solid fa-satellite-dish text-[#0070e0]"></i> Sentinel</b>
+          <span id="desc-sentinel">Waiting for a decline…</span>
+          <em id="lat-sentinel">—</em>
+        </li>
+        <li id="pipe-diagnostician" data-state="idle">
+          <b><i class="fa-solid fa-brain text-purple-400"></i> Diagnostician</b>
+          <span id="desc-diagnostician">Scikit-Learn classifier ready</span>
+          <em id="lat-diagnostician">—</em>
+        </li>
+        <li id="pipe-healer" data-state="idle">
+          <b><i class="fa-solid fa-wand-magic-sparkles text-emerald-400"></i> Healer</b>
+          <span id="desc-healer">Orders v2 payload builder ready</span>
+          <em id="lat-healer">—</em>
+        </li>
+      </ol>
+
+      <!-- MODEL SCORE RANKING BARS (Rendered dynamically on decline) -->
+      <div id="ranking-container" class="hidden mt-4 pt-4 border-t border-white/10 space-y-3">
+        <div class="flex items-center justify-between text-xs">
+          <span class="font-mono font-semibold text-slate-300 text-[11px] uppercase tracking-wider">
+            Tender Ranking (Model Score)
+          </span>
+          <span class="text-[10px] font-mono text-slate-400">Scikit-Learn Classifier</span>
+        </div>
+
+        <!-- Bar 1: Pay Later -->
+        <div class="space-y-1">
+          <div class="flex justify-between text-[11px] font-mono">
+            <span class="text-slate-200 font-semibold" id="label-paylater">PayPal Pay in 4 (Eligible $30–$1,500)</span>
+            <span class="text-emerald-400 font-bold" id="score-paylater">0.967</span>
+          </div>
+          <div class="w-full bg-white/5 h-2 rounded-full overflow-hidden">
+            <div id="bar-paylater" class="bg-[#0070e0] h-full rounded-full transition-all duration-500" style="width: 96.7%"></div>
+          </div>
+        </div>
+
+        <!-- Bar 2: Verified Wallet -->
+        <div class="space-y-1">
+          <div class="flex justify-between text-[11px] font-mono text-slate-400">
+            <span>PayPal Verified Wallet</span>
+            <span id="score-wallet">0.012</span>
+          </div>
+          <div class="w-full bg-white/5 h-2 rounded-full overflow-hidden">
+            <div id="bar-wallet" class="bg-slate-600 h-full rounded-full transition-all duration-500" style="width: 2%"></div>
+          </div>
+        </div>
+
+        <!-- Bar 3: Dynamic FX -->
+        <div class="space-y-1">
+          <div class="flex justify-between text-[11px] font-mono text-slate-400">
+            <span>PayPal Dynamic FX</span>
+            <span id="score-fx">0.011</span>
+          </div>
+          <div class="w-full bg-white/5 h-2 rounded-full overflow-hidden">
+            <div id="bar-fx" class="bg-slate-600 h-full rounded-full transition-all duration-500" style="width: 2%"></div>
+          </div>
+        </div>
+
+        <!-- Bar 4: Fastlane -->
+        <div class="space-y-1">
+          <div class="flex justify-between text-[11px] font-mono text-slate-400">
+            <span>PayPal Fastlane</span>
+            <span id="score-fastlane">0.010</span>
+          </div>
+          <div class="w-full bg-white/5 h-2 rounded-full overflow-hidden">
+            <div id="bar-fastlane" class="bg-slate-600 h-full rounded-full transition-all duration-500" style="width: 2%"></div>
+          </div>
+        </div>
+
+        <!-- Feature vector expander -->
+        <div class="pt-2 text-right">
+          <button onclick="toggleTraceDetails()" class="text-[10px] font-mono text-slate-400 hover:text-slate-200 underline">
+            Inspect Feature Vector & Metadata
+          </button>
+          <div id="raw-trace-box" class="hidden mt-2 p-2.5 bg-black/60 rounded text-left font-mono text-[10px] text-slate-400 space-y-1 border border-white/5">
+            <div>Vector: [amount: 0.24, is_liq: 1.0, is_fraud: 0.0, is_fx: 0.0, is_timeout: 0.0, velocity: 0.2]</div>
+            <div>Model: Multiclass LogisticRegression (calibrated via max_iter=300)</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Simulation transparency note -->
+      <p class="sim-note">
+        Decline codes are simulated via ISO 8583 banking triggers. Downstream payloads modeled on official PayPal Orders v2 REST schema (local event store).
+      </p>
+
+    </aside>
+
   </main>
 
   <!-- ========================================================================= -->
   <!-- TAB 2: MERCHANT WAR ROOM (EXECUTIVE DASHBOARD) -->
   <!-- ========================================================================= -->
-  <section id="tab-warroom-view" class="hidden max-w-6xl mx-auto px-4 sm:px-6 py-8 space-y-6">
+  <section id="tab-warroom-view" class="hidden max-w-6xl mx-auto px-4 py-8 space-y-6">
     
     <div class="flex items-center justify-between border-b border-white/10 pb-4">
       <div>
@@ -551,7 +737,7 @@
 
     <!-- 3 Key Metric Cards -->
     <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
-      <div class="glass-surface p-4">
+      <div class="p-4 rounded-xl bg-white/[0.04] border border-white/10">
         <span class="text-[11px] font-mono text-slate-400 uppercase tracking-wider block mb-1">Rescued GMV</span>
         <div id="kpi-gmv" class="text-2xl font-bold font-mono num-tabular text-emerald-400">$8,420.00</div>
         <div class="text-[11px] text-slate-400 mt-1 font-mono">
@@ -559,22 +745,22 @@
         </div>
       </div>
 
-      <div class="glass-surface p-4">
+      <div class="p-4 rounded-xl bg-white/[0.04] border border-white/10">
         <span class="text-[11px] font-mono text-slate-400 uppercase tracking-wider block mb-1">Rescue Rate</span>
         <div id="kpi-rate" class="text-2xl font-bold font-mono num-tabular text-[#0070e0]">86.2%</div>
         <div class="text-[11px] text-slate-400 mt-1 font-mono">Automated tender switch</div>
       </div>
 
-      <div class="glass-surface p-4">
+      <div class="p-4 rounded-xl bg-white/[0.04] border border-white/10">
         <span class="text-[11px] font-mono text-slate-400 uppercase tracking-wider block mb-1">Rescued Orders</span>
         <div id="kpi-count" class="text-2xl font-bold font-mono num-tabular text-purple-400">32 Carts</div>
         <div class="text-[11px] text-slate-400 mt-1 font-mono">Zero merchant manual effort</div>
       </div>
     </div>
 
-    <!-- Charts Row: Horizontal Bar Chart of Declines + Strategy Distribution -->
+    <!-- Charts Row -->
     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-      <div class="glass-surface p-5">
+      <div class="p-5 rounded-xl bg-white/[0.04] border border-white/10">
         <h4 class="text-xs font-mono font-bold uppercase text-slate-300 mb-3 flex items-center gap-2">
           <i class="fa-solid fa-chart-bar text-amber-400"></i> Ingested Decline Signatures
         </h4>
@@ -583,7 +769,7 @@
         </div>
       </div>
 
-      <div class="glass-surface p-5">
+      <div class="p-5 rounded-xl bg-white/[0.04] border border-white/10">
         <h4 class="text-xs font-mono font-bold uppercase text-slate-300 mb-3 flex items-center gap-2">
           <i class="fa-brands fa-paypal text-[#ffc439]"></i> Rescued Orders by PayPal Tender
         </h4>
@@ -594,12 +780,12 @@
     </div>
 
     <!-- Live Audit Table -->
-    <div class="glass-surface p-5">
+    <div class="p-5 rounded-xl bg-white/[0.04] border border-white/10">
       <div class="flex items-center justify-between mb-3 text-xs">
         <h4 class="font-mono font-bold uppercase text-slate-300 flex items-center gap-2">
           <i class="fa-solid fa-list text-[#0070e0]"></i> SQLite Transaction Audit Feed
         </h4>
-        <span class="text-[11px] font-mono text-slate-500">Click row to inspect trace</span>
+        <span class="text-[11px] font-mono text-slate-500">Live captured transactions</span>
       </div>
 
       <div class="overflow-x-auto">
@@ -625,44 +811,49 @@
   </section>
 
   <!-- ========================================================================= -->
-  <!-- FLOATING COLLAPSIBLE COPILOT CHAT (UNOBTRUSIVE) -->
+  <!-- FLOATING COLLAPSIBLE SIMULATION PILL (BOTTOM LEFT) -->
   <!-- ========================================================================= -->
-  <div class="fixed bottom-4 right-4 z-50">
-    <!-- Bubble Toggle -->
-    <button onclick="toggleCopilotBubble()" id="copilot-toggle-btn" class="w-11 h-11 rounded-full bg-[#0070e0] hover:bg-[#005bb5] text-white flex items-center justify-center shadow-lg transition">
-      <i class="fa-solid fa-comment-dots text-base"></i>
+  <div id="sim-pill-container">
+    <button onclick="toggleSimDrawer()" id="sim-pill" class="demo-pill">
+      <span class="w-2 h-2 rounded-full bg-amber-400"></span>
+      <span>Sim controls (H to hide)</span>
     </button>
 
-    <!-- Chat Window (Collapsed by default) -->
-    <div id="copilot-window" class="hidden absolute bottom-14 right-0 w-80 glass-surface p-4 shadow-2xl border border-white/10 space-y-2.5 slide-down-anim">
-      <div class="flex items-center justify-between border-b border-white/10 pb-2">
-        <span class="text-xs font-bold text-white flex items-center gap-1.5">
-          <i class="fa-solid fa-robot text-[#0070e0]"></i> Checkout Assistant
-        </span>
-        <button onclick="toggleCopilotBubble()" class="text-slate-400 hover:text-white text-xs">
-          <i class="fa-solid fa-xmark"></i>
-        </button>
+    <!-- Drawer Popup -->
+    <div id="sim-drawer" class="demo-drawer hidden">
+      <div class="flex items-center justify-between border-b border-white/10 pb-2 mb-2.5">
+        <span class="text-slate-300 font-bold">Simulation DevTools</span>
+        <button onclick="toggleSimDrawer()" class="text-slate-400 hover:text-white">✕</button>
       </div>
 
-      <div id="copilot-feed" class="text-xs text-slate-300 space-y-2 max-h-48 overflow-y-auto">
-        <div class="p-2 rounded bg-black/40 text-[11px] text-slate-300">
-          Hi! Ask anything about PayPal Pay in 4 terms, security, or why your card declined.
+      <div class="space-y-2.5">
+        <div>
+          <span class="text-[10px] text-slate-400 uppercase block mb-1">Decline Scenario:</span>
+          <div class="grid grid-cols-3 gap-1">
+            <button onclick="setScenario('INSUFFICIENT_FUNDS')" id="sc-insufficient" class="sc-btn py-1 rounded bg-[#0070e0]/20 text-[#0070e0] border border-[#0070e0]/40 font-semibold text-[10px]">
+              Code 51
+            </button>
+            <button onclick="setScenario('FRAUD_SUSPECTED')" id="sc-fraud" class="sc-btn py-1 rounded bg-white/5 text-slate-400 border border-white/10 text-[10px]">
+              Code 59
+            </button>
+            <button onclick="setScenario('CURRENCY_MISMATCH')" id="sc-currency" class="sc-btn py-1 rounded bg-white/5 text-slate-400 border border-white/10 text-[10px]">
+              Code 82
+            </button>
+          </div>
+        </div>
+
+        <div>
+          <span class="text-[10px] text-slate-400 uppercase block mb-1">Cart Value Eligibility:</span>
+          <div class="grid grid-cols-2 gap-1.5">
+            <button onclick="setCartTier(240)" id="tier-240" class="tier-btn py-1 rounded bg-emerald-500/20 text-emerald-400 border border-emerald-500/40 font-semibold text-[10px]">
+              $240 (Eligible)
+            </button>
+            <button onclick="setCartTier(1800)" id="tier-1800" class="tier-btn py-1 rounded bg-white/5 text-slate-400 border border-white/10 text-[10px]">
+              $1,800 (&gt;$1.5k)
+            </button>
+          </div>
         </div>
       </div>
-
-      <div class="flex flex-wrap gap-1">
-        <button onclick="askCopilot('Are there any interest or late fees?')" class="text-[10px] bg-white/5 hover:bg-white/10 px-2 py-0.5 rounded text-slate-300 font-mono">
-          Interest/Fees?
-        </button>
-        <button onclick="askCopilot('Why did my card decline?')" class="text-[10px] bg-white/5 hover:bg-white/10 px-2 py-0.5 rounded text-slate-300 font-mono">
-          Why declined?
-        </button>
-      </div>
-
-      <form onsubmit="handleCopilotSubmit(event)" class="flex gap-1.5">
-        <input id="copilot-input" type="text" placeholder="Ask a question..." class="flex-1 bg-black/40 border border-white/10 rounded px-2 py-1 text-xs text-slate-200">
-        <button type="submit" class="bg-[#0070e0] text-white text-xs px-2.5 py-1 rounded">Ask</button>
-      </form>
     </div>
   </div>
 
@@ -699,48 +890,52 @@
       }
     }
 
-    // Tab Navigation
-    function switchTab(tab) {
-      if (tab === 'checkout') {
-        document.getElementById('tab-checkout-view').classList.remove('hidden');
-        document.getElementById('tab-warroom-view').classList.add('hidden');
-        document.getElementById('nav-checkout').className = "nav-btn px-4 py-1.5 rounded-lg font-semibold text-white bg-[#0070e0] shadow-sm transition";
-        document.getElementById('nav-warroom').className = "nav-btn px-4 py-1.5 rounded-lg font-medium text-slate-400 hover:text-slate-200 transition";
-      } else {
-        document.getElementById('tab-checkout-view').classList.add('hidden');
-        document.getElementById('tab-warroom-view').classList.remove('hidden');
-        document.getElementById('nav-checkout').className = "nav-btn px-4 py-1.5 rounded-lg font-medium text-slate-400 hover:text-slate-200 transition";
-        document.getElementById('nav-warroom').className = "nav-btn px-4 py-1.5 rounded-lg font-semibold text-white bg-[#0070e0] shadow-sm transition";
-        loadAnalytics();
-      }
-    }
-
+    // State Variables
     let currentScenario = 'INSUFFICIENT_FUNDS';
     let currentCartAmount = 240.00;
     let currentTxId = null;
     let declineChart = null;
     let strategyChart = null;
+    let simPillHidden = false;
 
-    // Cart Tier Selector
-    function setCartTier(amt) {
-      currentCartAmount = amt;
-      document.getElementById('tier-240').className = amt === 240
-        ? "tier-btn px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-400 border border-emerald-500/40 font-semibold text-[11px]"
-        : "tier-btn px-2 py-0.5 rounded bg-white/5 text-slate-400 border border-white/10 text-[11px] hover:text-slate-200";
-      document.getElementById('tier-1800').className = amt === 1800
-        ? "tier-btn px-2 py-0.5 rounded bg-amber-500/20 text-amber-300 border border-amber-500/40 font-semibold text-[11px]"
-        : "tier-btn px-2 py-0.5 rounded bg-white/5 text-slate-400 border border-white/10 text-[11px] hover:text-slate-200";
+    // Live Credit Card Form Preview Updates
+    function updateCardPreview() {
+      const name = document.getElementById('cust-name').value.trim();
+      const num = document.getElementById('card-num').value.trim();
+      const exp = document.getElementById('card-exp').value.trim();
 
-      document.getElementById('summary-total-amt').innerHTML = `$${amt.toLocaleString()}.00 <span class="text-xs font-normal text-slate-400">USD</span>`;
-      document.getElementById('btn-pay-text').innerText = `Pay $${amt.toLocaleString()}.00 with Card`;
-      resetToHeroDemo(false);
+      document.getElementById('ccName').innerText = name.toUpperCase() || 'KRISH PUNIA';
+      document.getElementById('ccExp').innerText = exp || '08/28';
+
+      if (num.length >= 4) {
+        const last4 = num.replace(/\s+/g, '').slice(-4);
+        document.getElementById('ccNum').innerText = `•••• •••• •••• ${last4}`;
+      } else {
+        document.getElementById('ccNum').innerText = '•••• •••• •••• 1894';
+      }
+    }
+
+    // Tab Navigation
+    function switchTab(tab) {
+      if (tab === 'checkout') {
+        document.getElementById('tab-checkout-view').classList.remove('hidden');
+        document.getElementById('tab-warroom-view').classList.add('hidden');
+        document.getElementById('nav-checkout').className = "px-3.5 py-1.5 rounded-md font-semibold text-white bg-[#0070e0] shadow-sm transition";
+        document.getElementById('nav-warroom').className = "px-3.5 py-1.5 rounded-md font-medium text-slate-400 hover:text-slate-200 transition";
+      } else {
+        document.getElementById('tab-checkout-view').classList.add('hidden');
+        document.getElementById('tab-warroom-view').classList.remove('hidden');
+        document.getElementById('nav-checkout').className = "px-3.5 py-1.5 rounded-md font-medium text-slate-400 hover:text-slate-200 transition";
+        document.getElementById('nav-warroom').className = "px-3.5 py-1.5 rounded-md font-semibold text-white bg-[#0070e0] shadow-sm transition";
+        loadAnalytics();
+      }
     }
 
     // Simulation Scenario Chooser
     function setScenario(sc) {
       currentScenario = sc;
       document.querySelectorAll('.sc-btn').forEach(btn => {
-        btn.className = "sc-btn px-2 py-0.5 rounded bg-white/5 text-slate-400 border border-white/10 text-[11px] hover:text-slate-200";
+        btn.className = "sc-btn py-1 rounded bg-white/5 text-slate-400 border border-white/10 text-[10px]";
       });
       const activeBtnMap = {
         'INSUFFICIENT_FUNDS': 'sc-insufficient',
@@ -749,20 +944,41 @@
       };
       const active = document.getElementById(activeBtnMap[sc]);
       if (active) {
-        active.className = "sc-btn px-2 py-0.5 rounded bg-[#0070e0]/20 text-[#0070e0] border border-[#0070e0]/40 font-semibold text-[11px]";
+        active.className = "sc-btn py-1 rounded bg-[#0070e0]/20 text-[#0070e0] border border-[#0070e0]/40 font-semibold text-[10px]";
       }
+    }
+
+    // Cart Tier Selector ($240 vs $1,800)
+    function setCartTier(amt) {
+      currentCartAmount = amt;
+      document.getElementById('tier-240').className = amt === 240
+        ? "tier-btn py-1 rounded bg-emerald-500/20 text-emerald-400 border border-emerald-500/40 font-semibold text-[10px]"
+        : "tier-btn py-1 rounded bg-white/5 text-slate-400 border border-white/10 text-[10px]";
+      document.getElementById('tier-1800').className = amt === 1800
+        ? "tier-btn py-1 rounded bg-amber-500/20 text-amber-300 border border-amber-500/40 font-semibold text-[10px]"
+        : "tier-btn py-1 rounded bg-white/5 text-slate-400 border border-white/10 text-[10px]";
+
+      document.getElementById('summary-total-amt').innerText = `$${amt.toLocaleString()}.00`;
+      document.getElementById('btn-pay-text').innerText = `Pay $${amt.toLocaleString()}.00`;
+      resetToHeroDemo(false);
+    }
+
+    // Toggle Simulation Drawer
+    function toggleSimDrawer() {
+      const drawer = document.getElementById('sim-drawer');
+      drawer.classList.toggle('hidden');
     }
 
     // Hero Trigger: Card Decline Execution
     async function triggerCardDecline() {
-      const cardForm = document.getElementById('card-form-box');
+      const cardPreview = document.getElementById('cc-preview');
       const btnPay = document.getElementById('btn-pay');
       const btnText = document.getElementById('btn-pay-text');
       const btnIcon = document.getElementById('btn-pay-icon');
 
       btnPay.disabled = true;
-      btnText.innerText = "Contacting Card Issuer...";
-      btnIcon.className = "fa-solid fa-spinner fa-spin text-[11px]";
+      btnText.innerText = "Authorizing...";
+      btnIcon.className = "fa-solid fa-spinner fa-spin text-xs";
 
       try {
         const resp = await fetch('/api/checkout', {
@@ -772,45 +988,28 @@
             simulate_error: currentScenario,
             amount: currentCartAmount,
             customer_name: document.getElementById('cust-name').value,
-            card_last4: "4022"
+            card_last4: "1894"
           })
         });
 
         const data = await resp.json();
 
-        // 1. Hero Decline Shake & Amber Alert
+        // 1. Hero Decline Shake & DECLINED Stamp on Card Graphic
         playTone(220, 'sawtooth', 0.2);
-        cardForm.classList.add('shake-anim');
-        cardForm.style.borderColor = 'rgba(245, 158, 11, 0.7)';
+        cardPreview.classList.add('declined');
 
+        // 2. Collapse Form and Show One-Line Row
         setTimeout(() => {
-          cardForm.classList.remove('shake-anim');
-        }, 350);
-
-        btnText.innerText = "Declined by Issuer";
-        btnPay.className = "w-full mt-2 bg-amber-600/30 text-amber-300 font-semibold py-2.5 px-4 rounded-lg text-xs cursor-not-allowed border border-amber-500/40";
-        btnIcon.className = "fa-solid fa-circle-exclamation text-[11px]";
-
-        const inlineMsg = document.getElementById('inline-decline-msg');
-        inlineMsg.classList.remove('hidden');
-
-        if (currentScenario === 'INSUFFICIENT_FUNDS') {
-          document.getElementById('decline-title').innerText = "Your bank declined this card (insufficient funds)";
-          document.getElementById('decline-code-sub').innerText = "ISO 8583 · Response Code 51 · Liquidity / Daily Limit";
-        } else if (currentScenario === 'FRAUD_SUSPECTED') {
-          document.getElementById('decline-title').innerText = "Card issuer security rule triggered (suspected fraud)";
-          document.getElementById('decline-code-sub').innerText = "ISO 8583 · Response Code 59 · Heuristic Fraud Filter";
-        } else {
-          document.getElementById('decline-title').innerText = "Cross-border currency restriction";
-          document.getElementById('decline-code-sub').innerText = "ISO 8583 · Response Code 82 · Foreign Currency Block";
-        }
+          document.getElementById('card-form-wrapper').classList.add('hidden');
+          document.getElementById('collapsed-decline-row').classList.remove('hidden');
+        }, 320);
 
         currentTxId = data.transaction_id;
 
-        // 2. Animate 3-Step Pipeline Stepper
+        // 3. Animate 3-Step Pipeline in Console
         await animatePipelineStepper(data);
 
-        // 3. Reveal Model Ranking & Recovery Offer
+        // 4. Reveal Model Ranking & In-Place Offer
         renderRecoveryOffer(data);
 
       } catch (err) {
@@ -818,88 +1017,84 @@
       }
     }
 
-    // Step-by-Step Pipeline Animation
+    // Step-by-Step Pipeline Animation in Console
     async function animatePipelineStepper(data) {
-      const stepper = document.getElementById('stepper-box');
-      stepper.classList.remove('hidden');
+      document.getElementById('console-tag').className = "tag-monitoring";
+      document.getElementById('console-tag').innerText = "Interacting";
 
-      // Sentinel
-      const sIcon = document.getElementById('icon-sentinel');
-      const sDesc = document.getElementById('desc-sentinel');
-      const sLat = document.getElementById('lat-sentinel');
-      sIcon.innerHTML = `<i class="fa-solid fa-spinner fa-spin text-amber-400"></i>`;
-      sDesc.innerText = "Ingesting ISO 8583 telemetry...";
-      await new Promise(r => setTimeout(r, 200));
+      // Step 1: Sentinel
+      const p1 = document.getElementById('pipe-sentinel');
+      p1.setAttribute('data-state', 'running');
+      document.getElementById('desc-sentinel').innerText = "Ingesting ISO 8583 telemetry...";
+      await new Promise(r => setTimeout(r, 400));
 
       playTone(440, 'sine', 0.1);
-      sIcon.innerHTML = `<i class="fa-solid fa-check text-emerald-400"></i>`;
-      sDesc.innerText = `Code ${data.telemetry.iso_code} (${data.telemetry.decline_category})`;
-      sLat.innerText = `${data.latency_ms || 4} ms`;
+      p1.setAttribute('data-state', 'done');
+      document.getElementById('desc-sentinel').innerText = `Code ${data.telemetry.iso_code} (${data.telemetry.decline_category})`;
+      document.getElementById('lat-sentinel').innerText = `${data.latency_ms || 4}ms`;
 
-      // Diagnostician
-      const dIcon = document.getElementById('icon-diagnostician');
-      const dDesc = document.getElementById('desc-diagnostician');
-      const dLat = document.getElementById('lat-diagnostician');
-      dIcon.innerHTML = `<i class="fa-solid fa-spinner fa-spin text-[#0070e0]"></i>`;
-      dDesc.innerText = "Evaluating Scikit-Learn propensity model...";
-      await new Promise(r => setTimeout(r, 220));
+      // Step 2: Diagnostician
+      const p2 = document.getElementById('pipe-diagnostician');
+      p2.setAttribute('data-state', 'running');
+      document.getElementById('desc-diagnostician').innerText = "Evaluating Scikit-Learn propensity model...";
+      await new Promise(r => setTimeout(r, 450));
 
       playTone(550, 'sine', 0.1);
-      dIcon.innerHTML = `<i class="fa-solid fa-check text-emerald-400"></i>`;
-      dDesc.innerText = `${data.ranked_strategies[0].strategy} ranked #1 (Score: ${data.ranked_strategies[0].propensity})`;
-      dLat.innerText = "6 ms";
+      p2.setAttribute('data-state', 'done');
+      document.getElementById('desc-diagnostician').innerText = `${data.ranked_strategies[0].strategy} ranked #1`;
+      document.getElementById('lat-diagnostician').innerText = "6ms";
 
-      // Healer
-      const hIcon = document.getElementById('icon-healer');
-      const hDesc = document.getElementById('desc-healer');
-      const hLat = document.getElementById('lat-healer');
-      hIcon.innerHTML = `<i class="fa-solid fa-spinner fa-spin text-purple-400"></i>`;
-      hDesc.innerText = "Synthesizing PayPal Orders v2 payload...";
-      await new Promise(r => setTimeout(r, 180));
+      // Step 3: Healer
+      const p3 = document.getElementById('pipe-healer');
+      p3.setAttribute('data-state', 'running');
+      document.getElementById('desc-healer').innerText = "Synthesizing Orders v2 payload...";
+      await new Promise(r => setTimeout(r, 380));
 
       playTone(660, 'sine', 0.1);
-      hIcon.innerHTML = `<i class="fa-solid fa-check text-emerald-400"></i>`;
-      hDesc.innerText = "Orders v2 payload synthesized";
-      hLat.innerText = "4 ms";
+      p3.setAttribute('data-state', 'done');
+      document.getElementById('desc-healer').innerText = "Orders v2 payload synthesized";
+      document.getElementById('lat-healer').innerText = "4ms";
 
-      document.getElementById('total-inference-latency').innerText = `${(data.latency_ms || 4) + 10} ms total`;
+      document.getElementById('console-tag').innerText = "Resolved";
     }
 
-    // Render Offer & Model Ranking with Eligibility Check
+    // Render Offer & Model Ranking
     function renderRecoveryOffer(data) {
-      const ranking = document.getElementById('ranking-box');
+      const ranking = document.getElementById('ranking-container');
       ranking.classList.remove('hidden');
 
       const isEligiblePayLater = currentCartAmount >= 30 && currentCartAmount <= 1500;
 
-      // Update horizontal bars
+      // Update horizontal bars in console
       data.ranked_strategies.forEach(s => {
         if (s.strategy === 'PAYPAL_PAY_LATER') {
           if (isEligiblePayLater) {
-            document.getElementById('rank-score-paylater').innerText = s.propensity.toFixed(3);
-            document.getElementById('rank-score-paylater').className = "text-emerald-400 font-bold";
-            document.getElementById('rank-bar-paylater').style.width = `${s.propensity * 100}%`;
-            document.getElementById('rank-bar-paylater').className = "bg-[#0070e0] h-full rounded-full transition-all duration-500";
+            document.getElementById('score-paylater').innerText = s.propensity.toFixed(3);
+            document.getElementById('score-paylater').className = "text-emerald-400 font-bold";
+            document.getElementById('label-paylater').innerText = "PayPal Pay in 4 (Eligible $30–$1,500)";
+            document.getElementById('bar-paylater').style.width = `${s.propensity * 100}%`;
+            document.getElementById('bar-paylater').className = "bg-[#0070e0] h-full rounded-full transition-all duration-500";
           } else {
-            document.getElementById('rank-score-paylater').innerText = "Ineligible (Exceeds $1,500 limit)";
-            document.getElementById('rank-score-paylater').className = "text-slate-500 font-mono text-[10px]";
-            document.getElementById('rank-bar-paylater').style.width = "0%";
-            document.getElementById('rank-bar-paylater').className = "bg-slate-700 h-full rounded-full";
+            document.getElementById('score-paylater').innerText = "Ineligible (Exceeds $1,500 limit)";
+            document.getElementById('score-paylater').className = "text-slate-500 font-mono text-[10px]";
+            document.getElementById('label-paylater').innerText = "PayPal Pay in 4";
+            document.getElementById('bar-paylater').style.width = "0%";
+            document.getElementById('bar-paylater').className = "bg-slate-700 h-full rounded-full";
           }
         } else if (s.strategy === 'PAYPAL_VERIFIED_WALLET') {
-          document.getElementById('rank-score-wallet').innerText = s.propensity.toFixed(3);
-          document.getElementById('rank-bar-wallet').style.width = `${Math.max(s.propensity * 100, 3)}%`;
+          document.getElementById('score-wallet').innerText = s.propensity.toFixed(3);
+          document.getElementById('bar-wallet').style.width = `${Math.max(s.propensity * 100, 3)}%`;
         } else if (s.strategy === 'PAYPAL_DYNAMIC_FX') {
-          document.getElementById('rank-score-fx').innerText = s.propensity.toFixed(3);
-          document.getElementById('rank-bar-fx').style.width = `${Math.max(s.propensity * 100, 3)}%`;
+          document.getElementById('score-fx').innerText = s.propensity.toFixed(3);
+          document.getElementById('bar-fx').style.width = `${Math.max(s.propensity * 100, 3)}%`;
         } else if (s.strategy === 'PAYPAL_FASTLANE') {
-          document.getElementById('rank-score-fastlane').innerText = s.propensity.toFixed(3);
-          document.getElementById('rank-bar-fastlane').style.width = `${Math.max(s.propensity * 100, 3)}%`;
+          document.getElementById('score-fastlane').innerText = s.propensity.toFixed(3);
+          document.getElementById('bar-fastlane').style.width = `${Math.max(s.propensity * 100, 3)}%`;
         }
       });
 
-      // Show Recovery Panel
-      const rec = document.getElementById('recovery-panel');
+      // Expand In-Place Recovery Offer
+      const rec = document.getElementById('recovery-in-place');
       rec.classList.remove('hidden');
 
       const pkg = data.recovery_package;
@@ -907,7 +1102,7 @@
       document.getElementById('rec-subheadline').innerText = pkg.subheadline;
       document.getElementById('btn-paypal-label').innerText = pkg.cta_text;
 
-      const timeline = document.getElementById('timeline-container');
+      const timeline = document.getElementById('timeline-box');
       if (pkg.strategy === 'PAYPAL_PAY_LATER' && isEligiblePayLater) {
         timeline.classList.remove('hidden');
       } else {
@@ -944,48 +1139,55 @@
 
         playTone(880, 'triangle', 0.25);
 
-        document.getElementById('recovery-panel').classList.add('hidden');
-        document.getElementById('ranking-box').classList.add('hidden');
-        document.getElementById('stepper-box').classList.add('hidden');
-        document.getElementById('confirmed-panel').classList.remove('hidden');
+        document.getElementById('recovery-in-place').classList.add('hidden');
+        document.getElementById('confirmed-in-place').classList.remove('hidden');
 
         document.getElementById('conf-order-id').innerText = orderData.id;
         document.getElementById('conf-tender').innerText = currentCartAmount <= 1500 ? "PayPal Pay in 4" : "PayPal Verified Wallet";
-        document.getElementById('conf-latency').innerText = "18 ms";
 
       } catch (err) {
         console.error(err);
       }
     }
 
-    // One-Click Hero Demo Reset (Key 'D')
+    // Reset Demo State (Key 'D')
     function resetToHeroDemo(resetAmount = true) {
-      document.getElementById('confirmed-panel').classList.add('hidden');
-      document.getElementById('recovery-panel').classList.add('hidden');
-      document.getElementById('ranking-box').classList.add('hidden');
-      document.getElementById('stepper-box').classList.add('hidden');
-      document.getElementById('inline-decline-msg').classList.add('hidden');
+      document.getElementById('confirmed-in-place').classList.add('hidden');
+      document.getElementById('recovery-in-place').classList.add('hidden');
+      document.getElementById('collapsed-decline-row').classList.add('hidden');
+      document.getElementById('card-form-wrapper').classList.remove('hidden');
 
-      const cardForm = document.getElementById('card-form-box');
-      cardForm.style.borderColor = 'rgba(255, 255, 255, 0.10)';
+      const cc = document.getElementById('cc-preview');
+      cc.classList.remove('declined');
+
+      // Reset Pipeline in Console
+      ['sentinel', 'diagnostician', 'healer'].forEach(p => {
+        document.getElementById(`pipe-${p}`).setAttribute('data-state', 'idle');
+        document.getElementById(`lat-${p}`).innerText = '—';
+      });
+      document.getElementById('desc-sentinel').innerText = "Waiting for a decline…";
+      document.getElementById('desc-diagnostician').innerText = "Scikit-Learn classifier ready";
+      document.getElementById('desc-healer').innerText = "Orders v2 payload builder ready";
+      document.getElementById('ranking-container').classList.add('hidden');
+      document.getElementById('console-tag').innerText = "Monitoring";
 
       if (resetAmount) {
         currentCartAmount = 240.00;
-        document.getElementById('summary-total-amt').innerHTML = "$240.00 <span class=\"text-xs font-normal text-slate-400\">USD</span>";
-        document.getElementById('tier-240').className = "tier-btn px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-400 border border-emerald-500/40 font-semibold text-[11px]";
-        document.getElementById('tier-1800').className = "tier-btn px-2 py-0.5 rounded bg-white/5 text-slate-400 border border-white/10 text-[11px] hover:text-slate-200";
+        document.getElementById('summary-total-amt').innerText = "$240.00";
+        document.getElementById('tier-240').className = "tier-btn py-1 rounded bg-emerald-500/20 text-emerald-400 border border-emerald-500/40 font-semibold text-[10px]";
+        document.getElementById('tier-1800').className = "tier-btn py-1 rounded bg-white/5 text-slate-400 border border-white/10 text-[10px]";
       }
 
       const btnPay = document.getElementById('btn-pay');
-      btnPay.className = "w-full mt-2 bg-[#0070e0] hover:bg-[#005bb5] text-white font-semibold py-2.5 px-4 rounded-lg text-xs transition flex items-center justify-center gap-2";
-      document.getElementById('btn-pay-text').innerText = `Pay $${currentCartAmount.toLocaleString()}.00 with Card`;
-      document.getElementById('btn-pay-icon').className = "fa-solid fa-arrow-right text-[11px]";
+      btnPay.className = "pay-btn mt-3";
+      document.getElementById('btn-pay-text').innerText = `Pay $${currentCartAmount.toLocaleString()}.00`;
+      document.getElementById('btn-pay-icon').className = "fa-solid fa-arrow-right text-xs";
       btnPay.disabled = false;
 
       setScenario('INSUFFICIENT_FUNDS');
     }
 
-    // Guarded keyboard shortcut 'D' to reset demo
+    // Guarded Keyboard Shortcuts: 'D' to reset, 'H' to toggle simulation pill
     window.addEventListener('keydown', (e) => {
       const activeEl = document.activeElement;
       const tag = (activeEl && activeEl.tagName) || '';
@@ -994,49 +1196,12 @@
       }
       if (e.key === 'd' || e.key === 'D') {
         resetToHeroDemo();
+      } else if (e.key === 'h' || e.key === 'H') {
+        const pillContainer = document.getElementById('sim-pill-container');
+        simPillHidden = !simPillHidden;
+        pillContainer.classList.toggle('hidden', simPillHidden);
       }
     });
-
-    // Copilot Chat
-    function toggleCopilotBubble() {
-      const win = document.getElementById('copilot-window');
-      win.classList.toggle('hidden');
-    }
-
-    async function askCopilot(msg) {
-      const feed = document.getElementById('copilot-feed');
-      feed.innerHTML += `
-        <div class="text-right text-[11px] text-[#0070e0] font-medium">${msg}</div>
-      `;
-      feed.scrollTop = feed.scrollHeight;
-
-      try {
-        const resp = await fetch('/api/copilot/chat', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            message: msg,
-            amount: 240.00
-          })
-        });
-        const data = await resp.json();
-        feed.innerHTML += `
-          <div class="p-2 rounded bg-black/50 text-[11px] text-slate-200 border border-white/5">${data.reply}</div>
-        `;
-        feed.scrollTop = feed.scrollHeight;
-      } catch (err) {
-        console.error(err);
-      }
-    }
-
-    function handleCopilotSubmit(e) {
-      e.preventDefault();
-      const input = document.getElementById('copilot-input');
-      const val = input.value.trim();
-      if (!val) return;
-      askCopilot(val);
-      input.value = '';
-    }
 
     function toggleTraceDetails() {
       const box = document.getElementById('raw-trace-box');
@@ -1084,7 +1249,6 @@
     }
 
     function renderWarRoomCharts(data) {
-      // Horizontal Bar Chart of Declines (Colorblind-safe & clean)
       const declineLabels = Object.keys(data.decline_breakdown);
       const declineCounts = Object.values(data.decline_breakdown);
       const ctx1 = document.getElementById('chart-declines');
@@ -1113,7 +1277,6 @@
         });
       }
 
-      // Bar Chart of PayPal Tenders
       const stratLabels = Object.keys(data.strategy_breakdown).map(s => s.replace('PAYPAL_', ''));
       const stratCounts = Object.values(data.strategy_breakdown);
       const ctx2 = document.getElementById('chart-strategies');
