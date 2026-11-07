@@ -253,21 +253,6 @@ class HealerAgent:
                 "paypal_component": "fastlane-button",
                 "confidence": 0.92
             }
-                "paypal_component": "multi-currency-button",
-                "confidence": 0.95
-            }
-        else: # PAYPAL_FASTLANE
-            return {
-                "strategy": "PAYPAL_FASTLANE",
-                "headline": "Instant Guest Checkout with PayPal Fastlane",
-                "subheadline": "Zero-entry biometric checkout with 80%+ conversion lift.",
-                "explanation": "Card interchange experienced network latency. Complete this checkout with 1 tap using your saved Fastlane profile.",
-                "badge": "FASTLANE ACTIVATED • 1-TAP CHECKOUT",
-                "cta_text": "Complete with Fastlane by PayPal",
-                "installment_schedule": [],
-                "paypal_component": "fastlane-button",
-                "confidence": 0.92
-            }
 
 
 # ---------------------------------------------------------------------
